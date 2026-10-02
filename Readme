@@ -7,23 +7,32 @@
     - lg : Large , sm : Small , md - medium ..
 - Project Plan :
     - Laravel Techologies :
-        - Admin Side
-            - Authentication System ..
-            - Dashboard 
-            - Scheduale 
-            - Appointment ( New Appointment , All Appointments ) : Notification: Email , What's App , 
-            - Doctors ( Create Doctor , All Doctor, Specialist ) 
-            - Patients ( New Patient, All Patient -> Patient Profile : Details , Last Checkup , History )
-            - Complain Section 
-            - Accounts
-            - User Management 
-            - Logout
-    - React/NeXtJS :
-    - Client
-        - Authentication System 
-        - Dashboard
-        - New Appointment 
-        - My Appointments
-        - History
-        - Profile
-        - Logout
+    Admin Panel
+        The Admin Panel allows administrators to manage the complete appointment system.
+        - Authentication System – Secure admin login and account access.
+        - Dashboard – Overview of doctors, patients, appointments, schedules, and system activities.
+        - Schedule Management – Manage doctors' availability, working hours, and appointment schedules.
+        - Appointment Management – Create, view, manage, confirm, cancel, and reschedule appointments.
+        - Notifications – Send appointment-related notifications through Email and WhatsApp.
+        - Doctor Management – Add and manage doctors, doctor profiles, and medical specialties.
+        - Patient Management – Manage patient records, profiles, previous checkups, appointment history, and medical history.
+        - Complaint Management – Manage patient complaints and their responses/status.
+        - Accounts – Manage payments, expenses, and financial transactions related to appointments.
+        - User Management – Manage system users, staff, roles, and access.
+        - Logout – Securely end the admin session.
+    Client Portal — React / Next.js
+    The Client Portal allows patients to interact with the appointment system online.
+        - Authentication System – Patient registration, login, password recovery, and logout.
+        - Dashboard – View upcoming appointments, recent activities, and important information.
+        - New Appointment – Search/select a doctor or specialist, choose an available date and time, and book an appointment.
+        - My Appointments – View and manage current and upcoming appointments.
+        - History – View previous appointments, checkups, and visit history.
+        - Profile – Manage personal information and account details.
+        - Logout – Securely log out of the patient account.
+# Project Assignments Of Students  ..
+- Kanwal         : Hostel Management System - candidates , Room , Monthly Rent Invoice
+- Zeeshan Arif   : Car Service Management System - Dashboard , Vehicals , Customer , On Service , Invoice , Appointment
+- Zeeshan Yousaf : Food Cart System : Order Booking , Menu , Customer , Invoice 
+- Qasim Abbas    : Hotel Management System : Rooms , Customers , Bookings 
+- Asad Irfan     : Appointment Booking With Mobile Mobile App : 
+- Ahmed Dilawaiz : Shipping Company Project : Dashbaord , Bookings , Tracking , Payments , Customers ,Staff
