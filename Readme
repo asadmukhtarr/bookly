@@ -1,0 +1,29 @@
+- Guidlines
+    - What is Attribute in Html .
+    - How to start a class in html with css..
+    - In Html & CSS Color Means Font color and for background we use bgcolor as html attribute and backgorund-color:'' for css ..
+    - Types of css : Internal CSS , External CSS , Inline CSS
+- Rules of Bootstrap :
+    - lg : Large , sm : Small , md - medium ..
+- Project Plan :
+    - Laravel Techologies :
+        - Admin Side
+            - Authentication System ..
+            - Dashboard 
+            - Scheduale 
+            - Appointment ( New Appointment , All Appointments ) : Notification: Email , What's App , 
+            - Doctors ( Create Doctor , All Doctor, Specialist ) 
+            - Patients ( New Patient, All Patient -> Patient Profile : Details , Last Checkup , History )
+            - Complain Section 
+            - Accounts
+            - User Management 
+            - Logout
+    - React/NeXtJS :
+    - Client
+        - Authentication System 
+        - Dashboard
+        - New Appointment 
+        - My Appointments
+        - History
+        - Profile
+        - Logout

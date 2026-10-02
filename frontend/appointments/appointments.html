@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinic Admin Dashboard</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 4 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <style>
+        :root {
+            --sidebar-bg: #0f172a;
+            --sidebar-hover: #1e293b;
+            --sidebar-text: #cbd5e1;
+            --accent: #38bdf8;
+            --sidebar-w: 260px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+            overflow-x: hidden;
+        }
+
+        /* ---------- SIDEBAR ---------- */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            overflow-y: auto;
+            transition: transform .3s ease;
+            z-index: 1040;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+
+        .brand {
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #020617;
+            border-bottom: 1px solid #1e293b;
+            flex-shrink: 0;
+        }
+
+        .brand i {
+            font-size: 22px;
+            color: var(--accent);
+            background: rgba(56, 189, 248, .12);
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .brand-text h2 {
+            font-size: 16px;
+            color: #fff;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .brand-text span {
+            font-size: 10px;
+            color: #64748b;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .nav-side {
+            padding: 10px 0;
+            flex: 1;
+        }
+
+        .nav-side .nav-title {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: #475569;
+            padding: 14px 22px 6px;
+            font-weight: 600;
+        }
+
+        .nav-side .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 22px;
+            color: var(--sidebar-text);
+            font-size: 14px;
+            text-decoration: none;
+            border-left: 3px solid transparent;
+            transition: all .2s;
+            cursor: pointer;
+        }
+
+        .nav-side .nav-link:hover {
+            background: var(--sidebar-hover);
+            color: #fff;
+        }
+
+        .nav-side .nav-link.active {
+            background: var(--sidebar-hover);
+            color: #fff;
+            border-left-color: var(--accent);
+        }
+
+        .nav-side .nav-link .fa:first-child {
+            width: 18px;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .nav-side .nav-link .arrow {
+            margin-left: auto;
+            font-size: 11px;
+            transition: transform .2s;
+        }
+
+        .nav-side .nav-link[aria-expanded="true"] .arrow {
+            transform: rotate(90deg);
+        }
+
+        /* Submenu */
+        .submenu {
+            background: #020617;
+        }
+
+        .submenu .nav-link {
+            padding: 9px 22px 9px 52px;
+            font-size: 13px;
+            border-left: none;
+        }
+
+        .submenu .nav-link .fa {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .badge-pill-sm {
+            margin-left: auto;
+            background: #ef4444;
+            color: #fff;
+            font-size: 10px;
+            padding: 2px 7px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .sidebar-footer {
+            border-top: 1px solid #1e293b;
+            background: #020617;
+            flex-shrink: 0;
+        }
+
+        .sidebar-footer .nav-link {
+            color: #f87171;
+        }
+
+        .sidebar-footer .nav-link:hover {
+            background: #450a0a;
+            color: #fecaca;
+        }
+
+        /* ---------- MAIN ---------- */
+        .main-wrap {
+            margin-left: var(--sidebar-w);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: margin-left .3s ease;
+        }
+
+        /* Topbar */
+        .topbar {
+            background: #fff;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #334155;
+            cursor: pointer;
+            display: none;
+            padding: 4px 8px;
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .search-wrap {
+            margin-left: auto;
+            position: relative;
+        }
+
+        .search-wrap input {
+            padding: 8px 12px 8px 36px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13px;
+            width: 260px;
+            outline: none;
+            background: #f8fafc;
+            transition: all .2s;
+        }
+
+        .search-wrap input:focus {
+            border-color: var(--accent);
+            background: #fff;
+        }
+
+        .search-wrap .fa-search {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        .top-icons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .top-icons .icon-btn {
+            position: relative;
+            color: #475569;
+            font-size: 18px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 4px;
+            transition: color .2s;
+        }
+
+        .top-icons .icon-btn:hover {
+            color: #0f172a;
+        }
+
+        .top-icons .dot {
+            position: absolute;
+            top: -2px;
+            right: -6px;
+            background: #ef4444;
+            color: #fff;
+            font-size: 9px;
+            min-width: 16px;
+            height: 16px;
+            padding: 0 4px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .user-chip {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-left: 18px;
+            border-left: 1px solid #e2e8f0;
+            cursor: pointer;
+            background: none;
+            border-top: none;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .user-chip .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #38bdf8, #6366f1);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .user-chip .info {
+            text-align: left;
+        }
+
+        .user-chip .info strong {
+            display: block;
+            font-size: 13px;
+            color: #0f172a;
+        }
+
+        .user-chip .info span {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        /* Content */
+        .content {
+            padding: 24px;
+            flex: 1;
+        }
+
+        /* Welcome banner */
+        .welcome {
+            background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+            color: #fff;
+            padding: 26px 28px;
+            border-radius: 14px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .welcome h1 {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0 0 6px;
+        }
+
+        .welcome p {
+            margin: 0;
+            opacity: .92;
+            font-size: 13px;
+        }
+
+        .welcome .fa-calendar-check-o {
+            font-size: 70px;
+            opacity: .22;
+        }
+
+        /* Stat cards */
+        .stat-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
+            transition: transform .2s, box-shadow .2s;
+            height: 100%;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 24px rgba(0, 0, 0, .08);
+        }
+
+        .stat-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .bg-grad-blue {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+
+        .bg-grad-green {
+            background: linear-gradient(135deg, #10b981, #047857);
+        }
+
+        .bg-grad-orange {
+            background: linear-gradient(135deg, #f59e0b, #b45309);
+        }
+
+        .bg-grad-purple {
+            background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+        }
+
+        .bg-grad-red {
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+        }
+
+        .bg-grad-teal {
+            background: linear-gradient(135deg, #14b8a6, #0f766e);
+        }
+
+        .stat-info h3 {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .stat-info p {
+            font-size: 12px;
+            color: #64748b;
+            margin: 2px 0 0;
+        }
+
+        /* Panels */
+        .panel {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .panel-head {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .panel-head h6 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .panel-head .fa {
+            color: #64748b;
+        }
+
+        .panel-body {
+            padding: 18px 20px;
+        }
+
+        /* Table */
+        .table thead th {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            color: #64748b;
+            font-weight: 600;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 12px 16px;
+        }
+
+        .table tbody td {
+            padding: 14px 16px;
+            font-size: 13px;
+            vertical-align: middle;
+        }
+
+        .table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .status-badge {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .st-confirmed {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .st-pending {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .st-completed {
+            background: #d1fae5;
+            color: #047857;
+        }
+
+        .st-cancelled {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        /* Overlay for mobile */
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .5);
+            z-index: 1035;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity .3s;
+        }
+
+        .sidebar-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 991.98px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-wrap {
+                margin-left: 0;
+            }
+
+            .toggle-btn {
+                display: inline-block;
+            }
+
+            .search-wrap input {
+                width: 180px;
+            }
+
+            .user-chip .info {
+                display: none;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .search-wrap {
+                display: none;
+            }
+
+            .content {
+                padding: 16px;
+            }
+
+            .welcome {
+                padding: 20px;
+            }
+
+            .welcome .fa-calendar-check-o {
+                display: none;
+            }
+        }
+
+        /* Panel already defined in parent stylesheet */
+        /* ---------- ALL APPOINTMENTS PAGE ---------- */
+        .avatar-sm {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #e0f2fe;
+            color: #0369a1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        /* Give each avatar a distinct color using nth-child (optional) */
+        .table tbody tr:nth-child(4n+1) .avatar-sm {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .table tbody tr:nth-child(4n+2) .avatar-sm {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .table tbody tr:nth-child(4n+3) .avatar-sm {
+            background: #d1fae5;
+            color: #047857;
+        }
+
+        .table tbody tr:nth-child(4n+4) .avatar-sm {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        /* Pagination */
+        .pagination .page-link {
+            color: #475569;
+            border-color: #e2e8f0;
+            border-radius: 6px;
+            margin: 0 2px;
+            font-size: 13px;
+            padding: 5px 10px;
+        }
+
+        .pagination .page-item.active .page-link {
+            background: linear-gradient(135deg, #0ea5e9, #6366f1);
+            border-color: transparent;
+            color: #fff;
+        }
+
+        .pagination .page-link:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        /* Table checkbox */
+        .table .form-check-input {
+            cursor: pointer;
+        }
+
+        .table .form-check-input:checked {
+            background-color: #38bdf8;
+            border-color: #38bdf8;
+        }
+
+        /* Dropdown menu items */
+        .dropdown-menu {
+            font-size: 13px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            padding: 6px;
+        }
+
+        .dropdown-item {
+            border-radius: 6px;
+            padding: 7px 10px;
+        }
+
+        .dropdown-item:hover {
+            background: #f1f5f9;
+        }
+
+        /* Panel head buttons alignment */
+        .panel-head .btn-sm {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Responsive tweaks */
+        @media (max-width: 767.98px) {
+            .table-responsive {
+                font-size: 12px;
+            }
+
+            .avatar-sm {
+                width: 30px;
+                height: 30px;
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ============ SIDEBAR ============ -->
+    <!-- ============ SIDEBAR ============ -->
+    <aside class="sidebar" id="sidebar">
+
+        <!-- Brand -->
+        <div class="brand">
+            <i class="fa fa-heartbeat" aria-hidden="true"></i>
+            <div class="brand-text">
+                <h2>MediCare Clinic</h2>
+                <span>Admin Panel</span>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="nav-side">
+
+            <!-- Dashboard -->
+            <a href="../dashboard.html" class="nav-link active">
+                <i class="fa fa-dashboard" aria-hidden="true"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <!-- Schedule -->
+            <a href="../schedule.html" class="nav-link">
+                <i class="fa fa-calendar" aria-hidden="true"></i>
+                <span>Schedule</span>
+            </a>
+
+            <!-- Appointments (submenu) -->
+            <a class="nav-link" data-bs-toggle="collapse" href="#menuAppointment" role="button" aria-expanded="false">
+                <i class="fa fa-calendar-check-o" aria-hidden="true"></i>
+                <span>Appointments</span>
+                <i class="fa fa-angle-right arrow" aria-hidden="true"></i>
+            </a>
+            <div class="collapse submenu" id="menuAppointment">
+                <a href="create.html" class="nav-link">
+                    <i class="fa fa-plus-circle" aria-hidden="true"></i> New Appointment
+                </a>
+                <a href="appointments.html" class="nav-link">
+                    <i class="fa fa-list-ul" aria-hidden="true"></i> All Appointments
+                </a>
+            </div>
+
+            <!-- Doctors (submenu) -->
+            <a class="nav-link" data-bs-toggle="collapse" href="#menuDoctors" role="button" aria-expanded="false">
+                <i class="fa fa-user-md" aria-hidden="true"></i>
+                <span>Doctors</span>
+                <i class="fa fa-angle-right arrow" aria-hidden="true"></i>
+            </a>
+            <div class="collapse submenu" id="menuDoctors">
+                <a href="../doctors/create.html" class="nav-link">
+                    <i class="fa fa-user-plus" aria-hidden="true"></i> Create Doctor
+                </a>
+                <a href="../doctors/doctors.html" class="nav-link">
+                    <i class="fa fa-users" aria-hidden="true"></i> All Doctors
+                </a>
+                <a href="../doctors/specislists.html" class="nav-link">
+                    <i class="fa fa-stethoscope" aria-hidden="true"></i> Specialists
+                </a>
+            </div>
+
+            <!-- Patients (submenu) -->
+            <a class="nav-link" data-bs-toggle="collapse" href="#menuPatients" role="button" aria-expanded="false">
+                <i class="fa fa-user" aria-hidden="true"></i>
+                <span>Patients</span>
+                <i class="fa fa-angle-right arrow" aria-hidden="true"></i>
+            </a>
+            <div class="collapse submenu" id="menuPatients">
+                <a href="../patients/create.html" class="nav-link">
+                    <i class="fa fa-user-plus" aria-hidden="true"></i> New Patient
+                </a>
+                <a href="../patients/patients.html" class="nav-link">
+                    <i class="fa fa-users" aria-hidden="true"></i> All Patients
+                </a>
+            </div>
+
+            <!-- Complaints -->
+            <a href="../complaints.html" class="nav-link">
+                <i class="fa fa-comments-o" aria-hidden="true"></i>
+                <span>Complaints</span>
+                <span class="badge-pill-sm">3</span>
+            </a>
+
+            <!-- Accounts -->
+            <a href="../accounts.html" class="nav-link">
+                <i class="fa fa-money" aria-hidden="true"></i>
+                <span>Accounts</span>
+            </a>
+
+            <!-- User Management -->
+            <a href="../users.html" class="nav-link">
+                <i class="fa fa-user-circle-o" aria-hidden="true"></i>
+                <span>User Management</span>
+            </a>
+            <!-- User Management -->
+            <a href="#" class="nav-link">
+                <i class="fa fa-sig" aria-hidden="true"></i>
+                <span>Logout</span>
+            </a>
+
+        </nav>
+    </aside>
+
+    <!-- Overlay (mobile) -->
+    <div class="sidebar-overlay" id="overlay"></div>
+
+    <!-- ============ MAIN ============ -->
+    <div class="main-wrap" id="mainWrap">
+
+        <!-- Topbar -->
+        <header class="topbar">
+            <button class="toggle-btn" id="toggleBtn" aria-label="Toggle sidebar">
+                <i class="fa fa-bars" aria-hidden="true"></i>
+            </button>
+            <h1 class="page-title">Dashboard</h1>
+
+            <div class="search-wrap">
+                <i class="fa fa-search" aria-hidden="true"></i>
+                <input type="text" placeholder="Search patients, doctors...">
+            </div>
+
+            <div class="top-icons">
+                <button class="icon-btn" title="Notifications">
+                    <i class="fa fa-bell-o" aria-hidden="true"></i>
+                    <span class="dot">5</span>
+                </button>
+                <button class="icon-btn" title="Messages">
+                    <i class="fa fa-envelope-o" aria-hidden="true"></i>
+                    <span class="dot">2</span>
+                </button>
+                <div class="dropdown">
+                    <button class="user-chip" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="avatar">AD</div>
+                        <div class="info">
+                            <strong>Admin User</strong>
+                            <span>Super Admin</span>
+                        </div>
+                        <i class="fa fa-angle-down" style="font-size:12px;color:#64748b;margin-left:6px;"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                        <li><a class="dropdown-item" href="#"><i class="fa fa-user-o me-2"></i>My Profile</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fa fa-cog me-2"></i>Settings</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item text-danger" href="#"><i class="fa fa-sign-out me-2"></i>Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+
+        <!-- ================= MAIN CONTENT: NEW APPOINTMENT ================= -->
+        <!-- ================= MAIN CONTENT: ALL APPOINTMENTS ================= -->
+        <main class="content">
+
+            <!-- Page Header -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+                <div>
+                    <h4 class="mb-1 fw-bold">All Appointments</h4>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0 small">
+                            <li class="breadcrumb-item"><a href="../dashboard.html"
+                                    class="text-decoration-none">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="appointments.html"
+                                    class="text-decoration-none">Appointments</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">All Appointments</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="create.html" class="btn btn-primary btn-sm">
+                        <i class="fa fa-plus-circle me-1" aria-hidden="true"></i> New Appointment
+                    </a>
+                    <a href="../schedule.html" class="btn btn-outline-primary btn-sm">
+                        <i class="fa fa-calendar me-1" aria-hidden="true"></i> View Schedule
+                    </a>
+                </div>
+            </div>
+
+            <!-- Quick Stats Row -->
+            <div class="row g-3 mb-4">
+                <div class="col-sm-6 col-lg-3">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-grad-blue"><i class="fa fa-calendar-check-o" aria-hidden="true"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>248</h3>
+                            <p>Total Appointments</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-grad-green"><i class="fa fa-check-circle-o" aria-hidden="true"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>186</h3>
+                            <p>Completed</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-grad-orange"><i class="fa fa-clock-o" aria-hidden="true"></i></div>
+                        <div class="stat-info">
+                            <h3>34</h3>
+                            <p>Pending</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-grad-red"><i class="fa fa-times-circle-o" aria-hidden="true"></i></div>
+                        <div class="stat-info">
+                            <h3>28</h3>
+                            <p>Cancelled</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters Card -->
+            <div class="panel mb-4">
+                <div class="panel-body">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-3">
+                            <label class="form-label">Search</label>
+                            <div class="input-icon-wrap">
+                                <i class="fa fa-search input-icon" aria-hidden="true"></i>
+                                <input type="text" class="form-control" placeholder="Patient, doctor, MRN...">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Status</label>
+                            <div class="input-icon-wrap">
+                                <i class="fa fa-filter input-icon" aria-hidden="true"></i>
+                                <select class="form-select">
+                                    <option value="">All Status</option>
+                                    <option>Confirmed</option>
+                                    <option>Pending</option>
+                                    <option>Completed</option>
+                                    <option>Cancelled</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Doctor</label>
+                            <div class="input-icon-wrap">
+                                <i class="fa fa-user-md input-icon" aria-hidden="true"></i>
+                                <select class="form-select">
+                                    <option value="">All Doctors</option>
+                                    <option>Dr. Sarah Lee</option>
+                                    <option>Dr. James Wong</option>
+                                    <option>Dr. Aisha Khan</option>
+                                    <option>Dr. Michael Chen</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">From Date</label>
+                            <div class="input-icon-wrap">
+                                <i class="fa fa-calendar input-icon" aria-hidden="true"></i>
+                                <input type="date" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">To Date</label>
+                            <div class="d-flex gap-2">
+                                <div class="input-icon-wrap flex-grow-1">
+                                    <i class="fa fa-calendar input-icon" aria-hidden="true"></i>
+                                    <input type="date" class="form-control">
+                                </div>
+                                <button class="btn btn-primary" title="Apply Filters">
+                                    <i class="fa fa-search" aria-hidden="true"></i>
+                                </button>
+                                <button class="btn btn-light border" title="Reset Filters">
+                                    <i class="fa fa-refresh" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appointments Table Card -->
+            <div class="panel">
+                <div class="panel-head">
+                    <h6><i class="fa fa-list-ul me-2" aria-hidden="true"></i>Appointments List</h6>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-light text-dark border">Showing 1–10 of 248</span>
+                        <button class="btn btn-sm btn-light border" title="Export CSV">
+                            <i class="fa fa-file-excel-o" aria-hidden="true"></i> Export
+                        </button>
+                        <button class="btn btn-sm btn-light border" title="Print">
+                            <i class="fa fa-print" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th style="width:36px;">
+                                    <input type="checkbox" class="form-check-input" id="selectAll">
+                                </th>
+                                <th>#ID</th>
+                                <th>Patient</th>
+                                <th>Doctor</th>
+                                <th>Department</th>
+                                <th>Date &amp; Time</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Payment</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <!-- Row 1 -->
+                            <tr>
+                                <td><input type="checkbox" class="form-check-input"></td>
+                                <td><strong>#APT-1024</strong></td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar-sm">JS</div>
+                                        <div>
+                                            <div class="fw-semibold">John Smith</div>
+                                            <small class="text-muted">MRN-1001</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Dr. Sarah Lee</td>
+                                <td>Cardiology</td>
+                                <td>
+                                    <div>05 Oct 2026</div>
+                                    <small class="text-muted">10:30 AM</small>
+                                </td>
+                                <td><i class="fa fa-building-o text-muted me-1" aria-hidden="true"></i>In-Clinic</td>
+                                <td><span class="status-badge st-confirmed">Confirmed</span></td>
+                                <td><span class="status-badge st-completed">Paid</span></td>
+                                <td class="text-end">
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-light border" data-bs-toggle="dropdown">
+                                            <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-eye me-2"
+                                                        aria-hidden="true"></i>View</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-pencil me-2"
+                                                        aria-hidden="true"></i>Edit</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-check me-2"
+                                                        aria-hidden="true"></i>Mark Completed</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-envelope-o me-2"
+                                                        aria-hidden="true"></i>Resend Email</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-whatsapp me-2"
+                                                        aria-hidden="true"></i>Resend WhatsApp</a></li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+                                            <li><a class="dropdown-item text-danger" href="#"><i
+                                                        class="fa fa-times me-2" aria-hidden="true"></i>Cancel</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Row 2 -->
+                            <tr>
+                                <td><input type="checkbox" class="form-check-input"></td>
+                                <td><strong>#APT-1023</strong></td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar-sm">MA</div>
+                                        <div>
+                                            <div class="fw-semibold">Maria Ahmed</div>
+                                            <small class="text-muted">MRN-1002</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Dr. James Wong</td>
+                                <td>Dermatology</td>
+                                <td>
+                                    <div>05 Oct 2026</div>
+                                    <small class="text-muted">11:15 AM</small>
+                                </td>
+                                <td><i class="fa fa-video-camera text-muted me-1" aria-hidden="true"></i>Online</td>
+                                <td><span class="status-badge st-pending">Pending</span></td>
+                                <td><span class="status-badge st-pending">Unpaid</span></td>
+                                <td class="text-end">
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-light border" data-bs-toggle="dropdown">
+                                            <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-eye me-2"
+                                                        aria-hidden="true"></i>View</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-pencil me-2"
+                                                        aria-hidden="true"></i>Edit</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-check me-2"
+                                                        aria-hidden="true"></i>Mark Completed</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-envelope-o me-2"
+                                                        aria-hidden="true"></i>Resend Email</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-whatsapp me-2"
+                                                        aria-hidden="true"></i>Resend WhatsApp</a></li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+                                            <li><a class="dropdown-item text-danger" href="#"><i
+                                                        class="fa fa-times me-2" aria-hidden="true"></i>Cancel</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Row 3 -->
+                            <tr>
+                                <td><input type="checkbox" class="form-check-input"></td>
+                                <td><strong>#APT-1022</strong></td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar-sm">RK</div>
+                                        <div>
+                                            <div class="fw-semibold">Ravi Kumar</div>
+                                            <small class="text-muted">MRN-1003</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Dr. Aisha Khan</td>
+                                <td>General Medicine</td>
+                                <td>
+                                    <div>04 Oct 2026</div>
+                                    <small class="text-muted">02:00 PM</small>
+                                </td>
+                                <td><i class="fa fa-building-o text-muted me-1" aria-hidden="true"></i>In-Clinic</td>
+                                <td><span class="status-badge st-completed">Completed</span></td>
+                                <td><span class="status-badge st-completed">Paid</span></td>
+                                <td class="text-end">
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-light border" data-bs-toggle="dropdown">
+                                            <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-eye me-2"
+                                                        aria-hidden="true"></i>View</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-pencil me-2"
+                                                        aria-hidden="true"></i>Edit</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-file-text-o me-2"
+                                                        aria-hidden="true"></i>Prescription</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-money me-2"
+                                                        aria-hidden="true"></i>Invoice</a></li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+                                            <li><a class="dropdown-item text-danger" href="#"><i
+                                                        class="fa fa-times me-2" aria-hidden="true"></i>Cancel</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Row 4 -->
+                            <tr>
+                                <td><input type="checkbox" class="form-check-input"></td>
+                                <td><strong>#APT-1021</strong></td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar-sm">LP</div>
+                                        <div>
+                                            <div class="fw-semibold">Lisa Park</div>
+                                            <small class="text-muted">MRN-1004</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Dr. Michael Chen</td>
+                                <td>Orthopedics</td>
+                                <td>
+                                    <div>04 Oct 2026</div>
+                                    <small class="text-muted">03:30 PM</small>
+                                </td>
+                                <td><i class="fa fa-home text-muted me-1" aria-hidden="true"></i>Home Visit</td>
+                                <td><span class="status-badge st-cancelled">Cancelled</span></td>
+                                <td><span class="status-badge st-cancelled">Refunded</span></td>
+                                <td class="text-end">
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-light border" data-bs-toggle="dropdown">
+                                            <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-eye me-2"
+                                                        aria-hidden="true"></i>View</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-pencil me-2"
+                                                        aria-hidden="true"></i>Edit</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-undo me-2"
+                                                        aria-hidden="true"></i>Restore</a></li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+                                            <li><a class="dropdown-item text-danger" href="#"><i
+                                                        class="fa fa-trash me-2" aria-hidden="true"></i>Delete</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Row 5 -->
+                            <tr>
+                                <td><input type="checkbox" class="form-check-input"></td>
+                                <td><strong>#APT-1020</strong></td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar-sm">AH</div>
+                                        <div>
+                                            <div class="fw-semibold">Ahmed Hassan</div>
+                                            <small class="text-muted">MRN-1005</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Dr. Sarah Lee</td>
+                                <td>Cardiology</td>
+                                <td>
+                                    <div>03 Oct 2026</div>
+                                    <small class="text-muted">09:00 AM</small>
+                                </td>
+                                <td><i class="fa fa-building-o text-muted me-1" aria-hidden="true"></i>In-Clinic</td>
+                                <td><span class="status-badge st-confirmed">Confirmed</span></td>
+                                <td><span class="status-badge st-completed">Paid</span></td>
+                                <td class="text-end">
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-light border" data-bs-toggle="dropdown">
+                                            <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-eye me-2"
+                                                        aria-hidden="true"></i>View</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-pencil me-2"
+                                                        aria-hidden="true"></i>Edit</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-check me-2"
+                                                        aria-hidden="true"></i>Mark Completed</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-envelope-o me-2"
+                                                        aria-hidden="true"></i>Resend Email</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-whatsapp me-2"
+                                                        aria-hidden="true"></i>Resend WhatsApp</a></li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+                                            <li><a class="dropdown-item text-danger" href="#"><i
+                                                        class="fa fa-times me-2" aria-hidden="true"></i>Cancel</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Row 6 -->
+                            <tr>
+                                <td><input type="checkbox" class="form-check-input"></td>
+                                <td><strong>#APT-1019</strong></td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar-sm">SK</div>
+                                        <div>
+                                            <div class="fw-semibold">Sara Khan</div>
+                                            <small class="text-muted">MRN-1006</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Dr. Aisha Khan</td>
+                                <td>General Medicine</td>
+                                <td>
+                                    <div>03 Oct 2026</div>
+                                    <small class="text-muted">11:45 AM</small>
+                                </td>
+                                <td><i class="fa fa-video-camera text-muted me-1" aria-hidden="true"></i>Online</td>
+                                <td><span class="status-badge st-pending">Pending</span></td>
+                                <td><span class="status-badge st-pending">Unpaid</span></td>
+                                <td class="text-end">
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-light border" data-bs-toggle="dropdown">
+                                            <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-eye me-2"
+                                                        aria-hidden="true"></i>View</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-pencil me-2"
+                                                        aria-hidden="true"></i>Edit</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-check me-2"
+                                                        aria-hidden="true"></i>Mark Completed</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-envelope-o me-2"
+                                                        aria-hidden="true"></i>Resend Email</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-whatsapp me-2"
+                                                        aria-hidden="true"></i>Resend WhatsApp</a></li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+                                            <li><a class="dropdown-item text-danger" href="#"><i
+                                                        class="fa fa-times me-2" aria-hidden="true"></i>Cancel</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Row 7 -->
+                            <tr>
+                                <td><input type="checkbox" class="form-check-input"></td>
+                                <td><strong>#APT-1018</strong></td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar-sm">MR</div>
+                                        <div>
+                                            <div class="fw-semibold">Michael Reyes</div>
+                                            <small class="text-muted">MRN-1007</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Dr. James Wong</td>
+                                <td>Dermatology</td>
+                                <td>
+                                    <div>02 Oct 2026</div>
+                                    <small class="text-muted">04:15 PM</small>
+                                </td>
+                                <td><i class="fa fa-building-o text-muted me-1" aria-hidden="true"></i>In-Clinic</td>
+                                <td><span class="status-badge st-completed">Completed</span></td>
+                                <td><span class="status-badge st-completed">Paid</span></td>
+                                <td class="text-end">
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-light border" data-bs-toggle="dropdown">
+                                            <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-eye me-2"
+                                                        aria-hidden="true"></i>View</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-pencil me-2"
+                                                        aria-hidden="true"></i>Edit</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-file-text-o me-2"
+                                                        aria-hidden="true"></i>Prescription</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-money me-2"
+                                                        aria-hidden="true"></i>Invoice</a></li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+                                            <li><a class="dropdown-item text-danger" href="#"><i
+                                                        class="fa fa-times me-2" aria-hidden="true"></i>Cancel</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Row 8 -->
+                            <tr>
+                                <td><input type="checkbox" class="form-check-input"></td>
+                                <td><strong>#APT-1017</strong></td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar-sm">EN</div>
+                                        <div>
+                                            <div class="fw-semibold">Emma Nelson</div>
+                                            <small class="text-muted">MRN-1008</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Dr. Michael Chen</td>
+                                <td>Orthopedics</td>
+                                <td>
+                                    <div>02 Oct 2026</div>
+                                    <small class="text-muted">10:00 AM</small>
+                                </td>
+                                <td><i class="fa fa-building-o text-muted me-1" aria-hidden="true"></i>In-Clinic</td>
+                                <td><span class="status-badge st-cancelled">Cancelled</span></td>
+                                <td><span class="status-badge st-cancelled">Refunded</span></td>
+                                <td class="text-end">
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-light border" data-bs-toggle="dropdown">
+                                            <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-eye me-2"
+                                                        aria-hidden="true"></i>View</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-pencil me-2"
+                                                        aria-hidden="true"></i>Edit</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-undo me-2"
+                                                        aria-hidden="true"></i>Restore</a></li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+                                            <li><a class="dropdown-item text-danger" href="#"><i
+                                                        class="fa fa-trash me-2" aria-hidden="true"></i>Delete</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Row 9 -->
+                            <tr>
+                                <td><input type="checkbox" class="form-check-input"></td>
+                                <td><strong>#APT-1016</strong></td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar-sm">OB</div>
+                                        <div>
+                                            <div class="fw-semibold">Omar Bilal</div>
+                                            <small class="text-muted">MRN-1009</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Dr. Sarah Lee</td>
+                                <td>Cardiology</td>
+                                <td>
+                                    <div>01 Oct 2026</div>
+                                    <small class="text-muted">12:30 PM</small>
+                                </td>
+                                <td><i class="fa fa-video-camera text-muted me-1" aria-hidden="true"></i>Online</td>
+                                <td><span class="status-badge st-confirmed">Confirmed</span></td>
+                                <td><span class="status-badge st-completed">Paid</span></td>
+                                <td class="text-end">
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-light border" data-bs-toggle="dropdown">
+                                            <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-eye me-2"
+                                                        aria-hidden="true"></i>View</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-pencil me-2"
+                                                        aria-hidden="true"></i>Edit</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-check me-2"
+                                                        aria-hidden="true"></i>Mark Completed</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-envelope-o me-2"
+                                                        aria-hidden="true"></i>Resend Email</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-whatsapp me-2"
+                                                        aria-hidden="true"></i>Resend WhatsApp</a></li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+                                            <li><a class="dropdown-item text-danger" href="#"><i
+                                                        class="fa fa-times me-2" aria-hidden="true"></i>Cancel</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Row 10 -->
+                            <tr>
+                                <td><input type="checkbox" class="form-check-input"></td>
+                                <td><strong>#APT-1015</strong></td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar-sm">NF</div>
+                                        <div>
+                                            <div class="fw-semibold">Nadia Farooq</div>
+                                            <small class="text-muted">MRN-1010</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Dr. Aisha Khan</td>
+                                <td>General Medicine</td>
+                                <td>
+                                    <div>01 Oct 2026</div>
+                                    <small class="text-muted">09:30 AM</small>
+                                </td>
+                                <td><i class="fa fa-building-o text-muted me-1" aria-hidden="true"></i>In-Clinic</td>
+                                <td><span class="status-badge st-completed">Completed</span></td>
+                                <td><span class="status-badge st-completed">Paid</span></td>
+                                <td class="text-end">
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-light border" data-bs-toggle="dropdown">
+                                            <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-eye me-2"
+                                                        aria-hidden="true"></i>View</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-pencil me-2"
+                                                        aria-hidden="true"></i>Edit</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-file-text-o me-2"
+                                                        aria-hidden="true"></i>Prescription</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fa fa-money me-2"
+                                                        aria-hidden="true"></i>Invoice</a></li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+                                            <li><a class="dropdown-item text-danger" href="#"><i
+                                                        class="fa fa-times me-2" aria-hidden="true"></i>Cancel</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div
+                    class="panel-head border-top border-bottom-0 d-flex flex-wrap justify-content-between align-items-center gap-2">
+                    <div class="small text-muted">
+                        Showing <strong>1</strong> to <strong>10</strong> of <strong>248</strong> appointments
+                    </div>
+                    <nav>
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#"><i class="fa fa-angle-left" aria-hidden="true"></i></a>
+                            </li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item"><a class="page-link" href="#">4</a></li>
+                            <li class="page-item"><span class="page-link">...</span></li>
+                            <li class="page-item"><a class="page-link" href="#">25</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="#"><i class="fa fa-angle-right" aria-hidden="true"></i></a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Sidebar toggle
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const toggleBtn = document.getElementById('toggleBtn');
+
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('show');
+            overlay.classList.toggle('show');
+        });
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('show');
+            overlay.classList.remove('show');
+        });
+
+        // Active link switching
+        document.querySelectorAll('.nav-side .nav-link').forEach(link => {
+            link.addEventListener('click', function (e) {
+                // Don't switch active state for submenu toggles
+                if (this.hasAttribute('data-bs-toggle')) return;
+                document.querySelectorAll('.nav-side .nav-link').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+
+</body>
+
+</html>

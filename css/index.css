@@ -1,0 +1,20 @@
+    .heading-main {
+        color: blue;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 40px;
+    }
+
+    .heading-main:hover {
+        color: red;
+    }
+
+    .box {
+        height: 20px;
+        width: 100%;
+        background-color: red;
+        margin-top: 0.1%;
+    }
+
+    .box:hover {
+        background-color: beige;
+    }
