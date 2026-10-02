@@ -1,0 +1,1752 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accounts - Clinic Admin</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 4 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <style>
+        :root {
+            --sidebar-bg: #0f172a;
+            --sidebar-hover: #1e293b;
+            --sidebar-text: #cbd5e1;
+            --accent: #38bdf8;
+            --sidebar-w: 260px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+            overflow-x: hidden;
+        }
+
+        /* ---------- SIDEBAR ---------- */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            overflow-y: auto;
+            transition: transform .3s ease;
+            z-index: 1040;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+
+        .brand {
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #020617;
+            border-bottom: 1px solid #1e293b;
+            flex-shrink: 0;
+        }
+
+        .brand i {
+            font-size: 22px;
+            color: var(--accent);
+            background: rgba(56, 189, 248, .12);
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .brand-text h2 {
+            font-size: 16px;
+            color: #fff;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .brand-text span {
+            font-size: 10px;
+            color: #64748b;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .nav-side {
+            padding: 10px 0;
+            flex: 1;
+        }
+
+        .nav-side .nav-title {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: #475569;
+            padding: 14px 22px 6px;
+            font-weight: 600;
+        }
+
+        .nav-side .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 22px;
+            color: var(--sidebar-text);
+            font-size: 14px;
+            text-decoration: none;
+            border-left: 3px solid transparent;
+            transition: all .2s;
+            cursor: pointer;
+        }
+
+        .nav-side .nav-link:hover {
+            background: var(--sidebar-hover);
+            color: #fff;
+        }
+
+        .nav-side .nav-link.active {
+            background: var(--sidebar-hover);
+            color: #fff;
+            border-left-color: var(--accent);
+        }
+
+        .nav-side .nav-link .fa:first-child {
+            width: 18px;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .nav-side .nav-link .arrow {
+            margin-left: auto;
+            font-size: 11px;
+            transition: transform .2s;
+        }
+
+        .nav-side .nav-link[aria-expanded="true"] .arrow {
+            transform: rotate(90deg);
+        }
+
+        .submenu {
+            background: #020617;
+        }
+
+        .submenu .nav-link {
+            padding: 9px 22px 9px 52px;
+            font-size: 13px;
+            border-left: none;
+        }
+
+        .submenu .nav-link .fa {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .badge-pill-sm {
+            margin-left: auto;
+            background: #ef4444;
+            color: #fff;
+            font-size: 10px;
+            padding: 2px 7px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .sidebar-footer {
+            border-top: 1px solid #1e293b;
+            background: #020617;
+            flex-shrink: 0;
+        }
+
+        .sidebar-footer .nav-link {
+            color: #f87171;
+        }
+
+        .sidebar-footer .nav-link:hover {
+            background: #450a0a;
+            color: #fecaca;
+        }
+
+        /* ---------- MAIN ---------- */
+        .main-wrap {
+            margin-left: var(--sidebar-w);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: margin-left .3s ease;
+        }
+
+        .topbar {
+            background: #fff;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #334155;
+            cursor: pointer;
+            display: none;
+            padding: 4px 8px;
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .search-wrap {
+            margin-left: auto;
+            position: relative;
+        }
+
+        .search-wrap input {
+            padding: 8px 12px 8px 36px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13px;
+            width: 260px;
+            outline: none;
+            background: #f8fafc;
+            transition: all .2s;
+        }
+
+        .search-wrap input:focus {
+            border-color: var(--accent);
+            background: #fff;
+        }
+
+        .search-wrap .fa-search {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        .top-icons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .top-icons .icon-btn {
+            position: relative;
+            color: #475569;
+            font-size: 18px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 4px;
+            transition: color .2s;
+        }
+
+        .top-icons .icon-btn:hover {
+            color: #0f172a;
+        }
+
+        .top-icons .dot {
+            position: absolute;
+            top: -2px;
+            right: -6px;
+            background: #ef4444;
+            color: #fff;
+            font-size: 9px;
+            min-width: 16px;
+            height: 16px;
+            padding: 0 4px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .user-chip {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-left: 18px;
+            border-left: 1px solid #e2e8f0;
+            cursor: pointer;
+            background: none;
+            border-top: none;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .user-chip .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #38bdf8, #6366f1);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .user-chip .info {
+            text-align: left;
+        }
+
+        .user-chip .info strong {
+            display: block;
+            font-size: 13px;
+            color: #0f172a;
+        }
+
+        .user-chip .info span {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        /* Content */
+        .content {
+            padding: 24px;
+            flex: 1;
+        }
+
+        /* Stat cards */
+        .stat-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
+            transition: transform .2s, box-shadow .2s;
+            height: 100%;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 24px rgba(0, 0, 0, .08);
+        }
+
+        .stat-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .bg-grad-blue {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+
+        .bg-grad-green {
+            background: linear-gradient(135deg, #10b981, #047857);
+        }
+
+        .bg-grad-orange {
+            background: linear-gradient(135deg, #f59e0b, #b45309);
+        }
+
+        .bg-grad-purple {
+            background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+        }
+
+        .bg-grad-red {
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+        }
+
+        .bg-grad-teal {
+            background: linear-gradient(135deg, #14b8a6, #0f766e);
+        }
+
+        .stat-info h3 {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .stat-info p {
+            font-size: 12px;
+            color: #64748b;
+            margin: 2px 0 0;
+        }
+
+        /* Panels */
+        .panel {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .panel-head {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .panel-head h6 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .panel-head .fa {
+            color: #64748b;
+        }
+
+        .panel-body {
+            padding: 18px 20px;
+        }
+
+        /* Table */
+        .table thead th {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            color: #64748b;
+            font-weight: 600;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 12px 16px;
+        }
+
+        .table tbody td {
+            padding: 14px 16px;
+            font-size: 13px;
+            vertical-align: middle;
+        }
+
+        .table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .status-badge {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .st-paid {
+            background: #d1fae5;
+            color: #047857;
+        }
+
+        .st-pending {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .st-partial {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .st-refunded {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .st-overdue {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        /* Overlay for mobile */
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .5);
+            z-index: 1035;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity .3s;
+        }
+
+        .sidebar-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Input with leading icon */
+        .input-icon-wrap {
+            position: relative;
+        }
+
+        .input-icon-wrap .input-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 13px;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .input-icon-wrap .form-control,
+        .input-icon-wrap .form-select {
+            padding-left: 34px;
+            font-size: 13.5px;
+            border-color: #e2e8f0;
+            transition: all .2s;
+        }
+
+        .input-icon-wrap .form-control:focus,
+        .input-icon-wrap .form-select:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, .15);
+        }
+
+        .input-icon-wrap .form-select {
+            background-position: right 12px center;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16'%3E%3Cpath fill='%2394a3b8' d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-size: 10px;
+        }
+
+        /* Form labels */
+        .form-label {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, #0ea5e9, #6366f1);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0284c7, #4f46e5);
+        }
+
+        .btn {
+            border-radius: 8px;
+            font-size: 13.5px;
+            padding: 8px 16px;
+        }
+
+        .btn-sm {
+            font-size: 12.5px;
+            padding: 6px 12px;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb-item a {
+            color: #64748b;
+        }
+
+        .breadcrumb-item.active {
+            color: #0f172a;
+            font-weight: 500;
+        }
+
+        /* Invoice/transaction icon */
+        .txn-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .txn-in {
+            background: #dcfce7;
+            color: #047857;
+        }
+
+        .txn-out {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .txn-ref {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        /* Pill tabs */
+        .nav-pills .nav-link {
+            font-size: 13px;
+            color: #475569;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: 500;
+        }
+
+        .nav-pills .nav-link:hover {
+            background: #f1f5f9;
+        }
+
+        .nav-pills .nav-link.active {
+            background: linear-gradient(135deg, #0ea5e9, #6366f1);
+            color: #fff;
+        }
+
+        .nav-pills .nav-link .fa {
+            margin-right: 6px;
+        }
+
+        /* Dropdown menu */
+        .dropdown-menu {
+            font-size: 13px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            padding: 6px;
+        }
+
+        .dropdown-item {
+            border-radius: 6px;
+            padding: 7px 10px;
+        }
+
+        .dropdown-item:hover {
+            background: #f1f5f9;
+        }
+
+        /* Progress thin */
+        .progress-thin {
+            height: 6px;
+            border-radius: 4px;
+            background: #f1f5f9;
+        }
+
+        .progress-thin .progress-bar {
+            border-radius: 4px;
+        }
+
+        /* Pagination */
+        .pagination .page-link {
+            color: #475569;
+            border-color: #e2e8f0;
+            border-radius: 6px;
+            margin: 0 2px;
+            font-size: 13px;
+            padding: 5px 10px;
+        }
+
+        .pagination .page-item.active .page-link {
+            background: linear-gradient(135deg, #0ea5e9, #6366f1);
+            border-color: transparent;
+            color: #fff;
+        }
+
+        .pagination .page-link:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        /* Modal */
+        .modal-content {
+            border-radius: 14px;
+            border: none;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid #f1f5f9;
+            padding: 18px 22px;
+        }
+
+        .modal-title {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .modal-body {
+            padding: 22px;
+        }
+
+        .modal-footer {
+            border-top: 1px solid #f1f5f9;
+            padding: 14px 22px;
+        }
+
+        /* Summary card */
+        .summary-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .summary-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px dashed #e2e8f0;
+            font-size: 13px;
+        }
+
+        .summary-list li:last-child {
+            border-bottom: none;
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 991.98px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-wrap {
+                margin-left: 0;
+            }
+
+            .toggle-btn {
+                display: inline-block;
+            }
+
+            .search-wrap input {
+                width: 180px;
+            }
+
+            .user-chip .info {
+                display: none;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .search-wrap {
+                display: none;
+            }
+
+            .content {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ============ SIDEBAR ============ -->
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+            <i class="fa fa-heartbeat" aria-hidden="true"></i>
+            <div class="brand-text">
+                <h2>MediCare Clinic</h2>
+                <span>Admin Panel</span>
+            </div>
+        </div>
+
+        <nav class="nav-side">
+
+            <a href="dashboard.html" class="nav-link">
+                <i class="fa fa-dashboard" aria-hidden="true"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="schedule.html" class="nav-link">
+                <i class="fa fa-calendar" aria-hidden="true"></i>
+                <span>Schedule</span>
+            </a>
+
+            <a class="nav-link" data-bs-toggle="collapse" href="#menuAppointment" role="button" aria-expanded="false">
+                <i class="fa fa-calendar-check-o" aria-hidden="true"></i>
+                <span>Appointments</span>
+                <i class="fa fa-angle-right arrow" aria-hidden="true"></i>
+            </a>
+            <div class="collapse submenu" id="menuAppointment">
+                <a href="appointments/create.html" class="nav-link">
+                    <i class="fa fa-plus-circle" aria-hidden="true"></i> New Appointment
+                </a>
+                <a href="appointments/appointments.html" class="nav-link">
+                    <i class="fa fa-list-ul" aria-hidden="true"></i> All Appointments
+                </a>
+            </div>
+
+            <a class="nav-link" data-bs-toggle="collapse" href="#menuDoctors" role="button" aria-expanded="false">
+                <i class="fa fa-user-md" aria-hidden="true"></i>
+                <span>Doctors</span>
+                <i class="fa fa-angle-right arrow" aria-hidden="true"></i>
+            </a>
+            <div class="collapse submenu" id="menuDoctors">
+                <a href="doctors/create.html" class="nav-link">
+                    <i class="fa fa-user-plus" aria-hidden="true"></i> Create Doctor
+                </a>
+                <a href="doctors/doctors.html" class="nav-link">
+                    <i class="fa fa-users" aria-hidden="true"></i> All Doctors
+                </a>
+                <a href="doctors/specislists.html" class="nav-link">
+                    <i class="fa fa-stethoscope" aria-hidden="true"></i> Specialists
+                </a>
+            </div>
+
+            <a class="nav-link" data-bs-toggle="collapse" href="#menuPatients" role="button" aria-expanded="false">
+                <i class="fa fa-user" aria-hidden="true"></i>
+                <span>Patients</span>
+                <i class="fa fa-angle-right arrow" aria-hidden="true"></i>
+            </a>
+            <div class="collapse submenu" id="menuPatients">
+                <a href="patients/create.html" class="nav-link">
+                    <i class="fa fa-user-plus" aria-hidden="true"></i> New Patient
+                </a>
+                <a href="patients/patients.html" class="nav-link">
+                    <i class="fa fa-users" aria-hidden="true"></i> All Patients
+                </a>
+            </div>
+
+            <a href="complaints.html" class="nav-link">
+                <i class="fa fa-comments-o" aria-hidden="true"></i>
+                <span>Complaints</span>
+                <span class="badge-pill-sm">3</span>
+            </a>
+
+            <a href="accounts.html" class="nav-link active">
+                <i class="fa fa-money" aria-hidden="true"></i>
+                <span>Accounts</span>
+            </a>
+
+            <a href="users.html" class="nav-link">
+                <i class="fa fa-user-circle-o" aria-hidden="true"></i>
+                <span>User Management</span>
+            </a>
+
+            <a href="#" class="nav-link">
+                <i class="fa fa-sign-out" aria-hidden="true"></i>
+                <span>Logout</span>
+            </a>
+
+        </nav>
+    </aside>
+
+    <div class="sidebar-overlay" id="overlay"></div>
+
+    <!-- ============ MAIN ============ -->
+    <div class="main-wrap" id="mainWrap">
+
+        <!-- Topbar -->
+        <header class="topbar">
+            <button class="toggle-btn" id="toggleBtn" aria-label="Toggle sidebar" data-bs-toggle="offcanvas"
+                data-bs-target="#sidebar" aria-controls="sidebar">
+                <i class="fa fa-bars" aria-hidden="true"></i>
+            </button>
+            <h1 class="page-title">Accounts</h1>
+
+            <div class="search-wrap">
+                <i class="fa fa-search" aria-hidden="true"></i>
+                <input type="text" placeholder="Search patients, doctors...">
+            </div>
+
+            <div class="top-icons">
+                <button class="icon-btn" title="Notifications">
+                    <i class="fa fa-bell-o" aria-hidden="true"></i>
+                    <span class="dot">5</span>
+                </button>
+                <button class="icon-btn" title="Messages">
+                    <i class="fa fa-envelope-o" aria-hidden="true"></i>
+                    <span class="dot">2</span>
+                </button>
+                <div class="dropdown">
+                    <button class="user-chip" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="avatar">AD</div>
+                        <div class="info">
+                            <strong>Admin User</strong>
+                            <span>Super Admin</span>
+                        </div>
+                        <i class="fa fa-angle-down" style="font-size:12px;color:#64748b;margin-left:6px;"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                        <li><a class="dropdown-item" href="#"><i class="fa fa-user-o me-2"></i>My Profile</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fa fa-cog me-2"></i>Settings</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item text-danger" href="#"><i class="fa fa-sign-out me-2"></i>Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+
+        <!-- ================= MAIN CONTENT: ACCOUNTS ================= -->
+        <main class="content">
+
+            <!-- Page Header -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+                <div>
+                    <h4 class="mb-1 fw-bold">Accounts &amp; Billing</h4>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0 small">
+                            <li class="breadcrumb-item"><a href="dashboard.html"
+                                    class="text-decoration-none">Dashboard</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Accounts</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#newInvoiceModal">
+                        <i class="fa fa-file-text-o me-1" aria-hidden="true"></i> New Invoice
+                    </button>
+                    <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#newExpenseModal">
+                        <i class="fa fa-minus-circle me-1" aria-hidden="true"></i> Add Expense
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm">
+                        <i class="fa fa-file-excel-o me-1" aria-hidden="true"></i> Export
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Stats Row -->
+            <div class="row g-3 mb-4">
+                <div class="col-sm-6 col-lg-3">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-grad-green"><i class="fa fa-money" aria-hidden="true"></i></div>
+                        <div class="stat-info">
+                            <h3>$48,240</h3>
+                            <p>Total Revenue (This Month)</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-grad-red"><i class="fa fa-credit-card" aria-hidden="true"></i></div>
+                        <div class="stat-info">
+                            <h3>$6,320</h3>
+                            <p>Pending Payments</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-grad-orange"><i class="fa fa-line-chart" aria-hidden="true"></i></div>
+                        <div class="stat-info">
+                            <h3>$12,840</h3>
+                            <p>Total Expenses</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-grad-blue"><i class="fa fa-balance-scale" aria-hidden="true"></i></div>
+                        <div class="stat-info">
+                            <h3>$35,400</h3>
+                            <p>Net Profit</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Revenue / Expenses Summary -->
+            <div class="row g-3 mb-4">
+                <div class="col-lg-8">
+                    <div class="panel">
+                        <div class="panel-head">
+                            <h6><i class="fa fa-bar-chart me-2" aria-hidden="true"></i>Monthly Summary (Last 6 Months)
+                            </h6>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-light border" data-bs-toggle="dropdown">
+                                    This Year <i class="fa fa-angle-down ms-1" aria-hidden="true"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                    <option>This Year</option>
+                                    <li><a class="dropdown-item" href="#">This Year</a></li>
+                                    <li><a class="dropdown-item" href="#">Last Year</a></li>
+                                    <li><a class="dropdown-item" href="#">This Quarter</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Month</th>
+                                            <th>Revenue</th>
+                                            <th>Expenses</th>
+                                            <th>Net Profit</th>
+                                            <th style="width:180px;">Progress</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>April 2026</strong></td>
+                                            <td class="text-success">$8,540</td>
+                                            <td class="text-danger">$2,140</td>
+                                            <td class="fw-semibold">$6,400</td>
+                                            <td>
+                                                <div class="progress progress-thin">
+                                                    <div class="progress-bar bg-success" style="width: 75%"></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>May 2026</strong></td>
+                                            <td class="text-success">$9,120</td>
+                                            <td class="text-danger">$2,480</td>
+                                            <td class="fw-semibold">$6,640</td>
+                                            <td>
+                                                <div class="progress progress-thin">
+                                                    <div class="progress-bar bg-success" style="width: 80%"></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>June 2026</strong></td>
+                                            <td class="text-success">$7,860</td>
+                                            <td class="text-danger">$2,010</td>
+                                            <td class="fw-semibold">$5,850</td>
+                                            <td>
+                                                <div class="progress progress-thin">
+                                                    <div class="progress-bar bg-success" style="width: 68%"></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>July 2026</strong></td>
+                                            <td class="text-success">$10,240</td>
+                                            <td class="text-danger">$2,300</td>
+                                            <td class="fw-semibold">$7,940</td>
+                                            <td>
+                                                <div class="progress progress-thin">
+                                                    <div class="progress-bar bg-success" style="width: 88%"></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>August 2026</strong></td>
+                                            <td class="text-success">$11,120</td>
+                                            <td class="text-danger">$2,560</td>
+                                            <td class="fw-semibold">$8,560</td>
+                                            <td>
+                                                <div class="progress progress-thin">
+                                                    <div class="progress-bar bg-success" style="width: 92%"></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>September 2026</strong></td>
+                                            <td class="text-success">$12,440</td>
+                                            <td class="text-danger">$2,820</td>
+                                            <td class="fw-semibold">$9,620</td>
+                                            <td>
+                                                <div class="progress progress-thin">
+                                                    <div class="progress-bar bg-success" style="width: 96%"></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="panel h-100">
+                        <div class="panel-head">
+                            <h6><i class="fa fa-pie-chart me-2" aria-hidden="true"></i>Payment Breakdown</h6>
+                        </div>
+                        <div class="panel-body">
+                            <ul class="summary-list mb-3">
+                                <li>
+                                    <span><i class="fa fa-money text-success me-2" aria-hidden="true"></i>Cash</span>
+                                    <strong>$18,240 (38%)</strong>
+                                </li>
+                                <li>
+                                    <span><i class="fa fa-credit-card text-primary me-2"
+                                            aria-hidden="true"></i>Card</span>
+                                    <strong>$14,860 (31%)</strong>
+                                </li>
+                                <li>
+                                    <span><i class="fa fa-mobile text-info me-2" aria-hidden="true"></i>UPI /
+                                        Online</span>
+                                    <strong>$9,240 (19%)</strong>
+                                </li>
+                                <li>
+                                    <span><i class="fa fa-shield text-warning me-2"
+                                            aria-hidden="true"></i>Insurance</span>
+                                    <strong>$5,900 (12%)</strong>
+                                </li>
+                            </ul>
+
+                            <hr>
+
+                            <div class="d-flex justify-content-between small text-muted mb-1">
+                                <span>Monthly Target</span>
+                                <span><strong>96%</strong></span>
+                            </div>
+                            <div class="progress progress-thin mb-3">
+                                <div class="progress-bar bg-primary" style="width: 96%"></div>
+                            </div>
+
+                            <div class="alert alert-light border small mb-0">
+                                <i class="fa fa-info-circle text-primary me-1" aria-hidden="true"></i>
+                                Target: <strong>$50,000</strong> / month
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs: Invoices / Expenses / Payments -->
+            <div class="panel">
+                <div class="panel-head flex-wrap gap-2">
+                    <h6 class="mb-0"><i class="fa fa-list-ul me-2" aria-hidden="true"></i>Transactions</h6>
+                    <ul class="nav nav-pills" id="txnTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="invoices-tab" data-bs-toggle="pill"
+                                data-bs-target="#invoices" type="button" role="tab" aria-controls="invoices"
+                                aria-selected="true">
+                                <i class="fa fa-file-text-o" aria-hidden="true"></i> Invoices
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="payments-tab" data-bs-toggle="pill" data-bs-target="#payments"
+                                type="button" role="tab" aria-controls="payments" aria-selected="false">
+                                <i class="fa fa-credit-card" aria-hidden="true"></i> Payments
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="expenses-tab" data-bs-toggle="pill" data-bs-target="#expenses"
+                                type="button" role="tab" aria-controls="expenses" aria-selected="false">
+                                <i class="fa fa-minus-circle" aria-hidden="true"></i> Expenses
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="tab-content" id="txnTabsContent">
+
+                    <!-- ============== INVOICES TAB ============== -->
+                    <div class="tab-pane fade show active" id="invoices" role="tabpanel" aria-labelledby="invoices-tab">
+
+                        <div class="panel-body border-bottom">
+                            <div class="row g-3 align-items-end">
+                                <div class="col-md-4">
+                                    <label class="form-label">Search</label>
+                                    <div class="input-icon-wrap">
+                                        <i class="fa fa-search input-icon" aria-hidden="true"></i>
+                                        <input type="text" class="form-control"
+                                            placeholder="Invoice #, patient name...">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Status</label>
+                                    <div class="input-icon-wrap">
+                                        <i class="fa fa-filter input-icon" aria-hidden="true"></i>
+                                        <select class="form-select">
+                                            <option value="">All Status</option>
+                                            <option>Paid</option>
+                                            <option>Pending</option>
+                                            <option>Partial</option>
+                                            <option>Refunded</option>
+                                            <option>Overdue</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Date Range</label>
+                                    <div class="input-icon-wrap">
+                                        <i class="fa fa-calendar input-icon" aria-hidden="true"></i>
+                                        <input type="date" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <button class="btn btn-primary w-100">
+                                        <i class="fa fa-search me-1" aria-hidden="true"></i> Filter
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Invoice #</th>
+                                        <th>Patient</th>
+                                        <th>Doctor</th>
+                                        <th>Date</th>
+                                        <th>Amount</th>
+                                        <th>Method</th>
+                                        <th>Status</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>INV-2041</strong></td>
+                                        <td>John Smith <br><small class="text-muted">MRN-1001</small></td>
+                                        <td>Dr. Sarah Lee</td>
+                                        <td>30 Sep 2026</td>
+                                        <td class="fw-semibold">$60.00</td>
+                                        <td><i class="fa fa-money text-success me-1" aria-hidden="true"></i>Cash</td>
+                                        <td><span class="status-badge st-paid">Paid</span></td>
+                                        <td class="text-end">
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-light border" data-bs-toggle="dropdown">
+                                                    <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                                    <li><a class="dropdown-item" href="#"><i class="fa fa-eye me-2"
+                                                                aria-hidden="true"></i>View</a></li>
+                                                    <li><a class="dropdown-item" href="#"><i class="fa fa-pencil me-2"
+                                                                aria-hidden="true"></i>Edit</a></li>
+                                                    <li><a class="dropdown-item" href="#"><i class="fa fa-print me-2"
+                                                                aria-hidden="true"></i>Print</a></li>
+                                                    <li><a class="dropdown-item" href="#"><i
+                                                                class="fa fa-envelope-o me-2"
+                                                                aria-hidden="true"></i>Send Email</a></li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+                                                    <li><a class="dropdown-item text-danger" href="#"><i
+                                                                class="fa fa-trash me-2"
+                                                                aria-hidden="true"></i>Delete</a></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>INV-2040</strong></td>
+                                        <td>Maria Ahmed <br><small class="text-muted">MRN-1002</small></td>
+                                        <td>Dr. James Wong</td>
+                                        <td>29 Sep 2026</td>
+                                        <td class="fw-semibold">$50.00</td>
+                                        <td><i class="fa fa-credit-card text-primary me-1" aria-hidden="true"></i>Card
+                                        </td>
+                                        <td><span class="status-badge st-pending">Pending</span></td>
+                                        <td class="text-end">
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-light border" data-bs-toggle="dropdown">
+                                                    <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                                    <li><a class="dropdown-item" href="#"><i class="fa fa-eye me-2"
+                                                                aria-hidden="true"></i>View</a></li>
+                                                    <li><a class="dropdown-item" href="#"><i class="fa fa-pencil me-2"
+                                                                aria-hidden="true"></i>Edit</a></li>
+                                                    <li><a class="dropdown-item" href="#"><i class="fa fa-check me-2"
+                                                                aria-hidden="true"></i>Mark Paid</a></li>
+                                                    <li><a class="dropdown-item" href="#"><i
+                                                                class="fa fa-envelope-o me-2"
+                                                                aria-hidden="true"></i>Send Reminder</a></li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+                                                    <li><a class="dropdown-item text-danger" href="#"><i
+                                                                class="fa fa-trash me-2"
+                                                                aria-hidden="true"></i>Delete</a></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>INV-2039</strong></td>
+                                        <td>Ravi Kumar <br><small class="text-muted">MRN-1003</small></td>
+                                        <td>Dr. Aisha Khan</td>
+                                        <td>28 Sep 2026</td>
+                                        <td class="fw-semibold">$40.00</td>
+                                        <td><i class="fa fa-mobile text-info me-1" aria-hidden="true"></i>UPI</td>
+                                        <td><span class="status-badge st-paid">Paid</span></td>
+                                        <td class="text-end">
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-light border" data-bs-toggle="dropdown">
+                                                    <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                                    <li><a class="dropdown-item" href="#"><i class="fa fa-eye me-2"
+                                                                aria-hidden="true"></i>View</a></li>
+                                                    <li><a class="dropdown-item" href="#"><i class="fa fa-pencil me-2"
+                                                                aria-hidden="true"></i>Edit</a></li>
+                                                    <li><a class="dropdown-item" href="#"><i class="fa fa-print me-2"
+                                                                aria-hidden="true"></i>Print</a></li>
+                                                    <li><a class="dropdown-item" href="#"><i
+                                                                class="fa fa-envelope-o me-2"
+                                                                aria-hidden="true"></i>Send Email</a></li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+                                                    <li><a class="dropdown-item text-danger" href="#"><i
+                                                                class="fa fa-trash me-2"
+                                                                aria-hidden="true"></i>Delete</a></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>INV-2038</strong></td>
+                                        <td>Lisa Park <br><small class="text-muted">MRN-1004</small></td>
+                                        <td>Dr. Michael Chen</td>
+                                        <td>27 Sep 2026</td>
+                                        <td class="fw-semibold">$80.00</td>
+                                        <td><i class="fa fa-shield text-warning me-1" aria-hidden="true"></i>Insurance
+                                        </td>
+                                        <td><span class="status-badge st-partial">Partial</span></td>
+                                        <td class="text-end">
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-light border" data-bs-toggle="dropdown">
+                                                    <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                                    <li><a class="dropdown-item" href="#"><i class="fa fa-eye me-2"
+                                                                aria-hidden="true"></i>View</a></li>
+                                                    <li><a class="dropdown-item" href="#"><i class="fa fa-pencil me-2"
+                                                                aria-hidden="true"></i>Edit</a></li>
+                                                    <li><a class="dropdown-item" href="#"><i class="fa fa-check me-2"
+                                                                aria-hidden="true"></i>Mark Paid</a></li>
+                                                    <li><a class="dropdown-item" href="#"><i
+                                                                class="fa fa-envelope-o me-2"
+                                                                aria-hidden="true"></i>Send Reminder</a></li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+                                                    <li><a class="dropdown-item text-danger" href="#"><i
+                                                                class="fa fa-trash me-2"
+                                                                aria-hidden="true"></i>Delete</a></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>INV-2037</strong></td>
+                                        <td>Ahmed Hassan <br><small class="text-muted">MRN-1005</small></td>
+                                        <td>Dr. Sarah Lee</td>
+                                        <td>26 Sep 2026</td>
+                                        <td class="fw-semibold">$60.00</td>
+                                        <td><i class="fa fa-money text-success me-1" aria-hidden="true"></i>Cash</td>
+                                        <td><span class="status-badge st-overdue">Overdue</span></td>
+                                        <td class="text-end">
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-light border" data-bs-toggle="dropdown">
+                                                    <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                                    <li><a class="dropdown-item" href="#"><i class="fa fa-eye me-2"
+                                                                aria-hidden="true"></i>View</a></li>
+                                                    <li><a class="dropdown-item" href="#"><i class="fa fa-pencil me-2"
+                                                                aria-hidden="true"></i>Edit</a></li>
+                                                    <li><a class="dropdown-item" href="#"><i class="fa fa-check me-2"
+                                                                aria-hidden="true"></i>Mark Paid</a></li>
+                                                    <li><a class="dropdown-item" href="#"><i class="fa fa-bell-o me-2"
+                                                                aria-hidden="true"></i>Send Reminder</a></li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+                                                    <li><a class="dropdown-item text-danger" href="#"><i
+                                                                class="fa fa-trash me-2"
+                                                                aria-hidden="true"></i>Delete</a></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>INV-2036</strong></td>
+                                        <td>Sara Khan <br><small class="text-muted">MRN-1006</small></td>
+                                        <td>Dr. Aisha Khan</td>
+                                        <td>25 Sep 2026</td>
+                                        <td class="fw-semibold">$40.00</td>
+                                        <td><i class="fa fa-credit-card text-primary me-1" aria-hidden="true"></i>Card
+                                        </td>
+                                        <td><span class="status-badge st-refunded">Refunded</span></td>
+                                        <td class="text-end">
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-light border" data-bs-toggle="dropdown">
+                                                    <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                                    <li><a class="dropdown-item" href="#"><i class="fa fa-eye me-2"
+                                                                aria-hidden="true"></i>View</a></li>
+                                                    <li><a class="dropdown-item" href="#"><i class="fa fa-pencil me-2"
+                                                                aria-hidden="true"></i>Edit</a></li>
+                                                    <li><a class="dropdown-item" href="#"><i class="fa fa-print me-2"
+                                                                aria-hidden="true"></i>Print</a></li>
+                                                    <li>
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+                                                    <li><a class="dropdown-item text-danger" href="#"><i
+                                                                class="fa fa-trash me-2"
+                                                                aria-hidden="true"></i>Delete</a></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="panel-head border-top border-bottom-0">
+                            <div class="small text-muted">Showing <strong>1</strong> to <strong>6</strong> of
+                                <strong>128</strong> invoices</div>
+                            <nav>
+                                <ul class="pagination pagination-sm mb-0">
+                                    <li class="page-item disabled"><a class="page-link" href="#"><i
+                                                class="fa fa-angle-left" aria-hidden="true"></i></a></li>
+                                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">4</a></li>
+                                    <li class="page-item"><a class="page-link" href="#"><i class="fa fa-angle-right"
+                                                aria-hidden="true"></i></a></li>
+                                </ul>
+                            </nav>
+                        </div>
+
+                    </div>
+
+                    <!-- ============== PAYMENTS TAB ============== -->
+                    <div class="tab-pane fade" id="payments" role="tabpanel" aria-labelledby="payments-tab">
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Transaction ID</th>
+                                        <th>Patient</th>
+                                        <th>Amount</th>
+                                        <th>Method</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>TXN-98210</strong></td>
+                                        <td>John Smith</td>
+                                        <td class="text-success fw-semibold">+ $60.00</td>
+                                        <td><i class="fa fa-money text-success me-1" aria-hidden="true"></i>Cash</td>
+                                        <td>30 Sep 2026</td>
+                                        <td><span class="status-badge st-paid">Completed</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>TXN-98209</strong></td>
+                                        <td>Ravi Kumar</td>
+                                        <td class="text-success fw-semibold">+ $40.00</td>
+                                        <td><i class="fa fa-mobile text-info me-1" aria-hidden="true"></i>UPI</td>
+                                        <td>28 Sep 2026</td>
+                                        <td><span class="status-badge st-paid">Completed</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>TXN-98208</strong></td>
+                                        <td>Lisa Park</td>
+                                        <td class="text-success fw-semibold">+ $40.00</td>
+                                        <td><i class="fa fa-shield text-warning me-1" aria-hidden="true"></i>Insurance
+                                        </td>
+                                        <td>27 Sep 2026</td>
+                                        <td><span class="status-badge st-partial">Partial</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>TXN-98207</strong></td>
+                                        <td>Sara Khan</td>
+                                        <td class="text-danger fw-semibold">− $40.00</td>
+                                        <td><i class="fa fa-credit-card text-primary me-1" aria-hidden="true"></i>Card
+                                            Refund</td>
+                                        <td>25 Sep 2026</td>
+                                        <td><span class="status-badge st-refunded">Refunded</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>TXN-98206</strong></td>
+                                        <td>Ahmed Hassan</td>
+                                        <td class="text-success fw-semibold">+ $60.00</td>
+                                        <td><i class="fa fa-money text-success me-1" aria-hidden="true"></i>Cash</td>
+                                        <td>24 Sep 2026</td>
+                                        <td><span class="status-badge st-paid">Completed</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- ============== EXPENSES TAB ============== -->
+                    <div class="tab-pane fade" id="expenses" role="tabpanel" aria-labelledby="expenses-tab">
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Expense ID</th>
+                                        <th>Category</th>
+                                        <th>Description</th>
+                                        <th>Amount</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>EXP-5011</strong></td>
+                                        <td><i class="fa fa-flask text-primary me-1" aria-hidden="true"></i>Lab Supplies
+                                        </td>
+                                        <td>Reagents and test kits</td>
+                                        <td class="text-danger fw-semibold">− $1,240.00</td>
+                                        <td>30 Sep 2026</td>
+                                        <td><span class="status-badge st-paid">Paid</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>EXP-5010</strong></td>
+                                        <td><i class="fa fa-bolt text-warning me-1" aria-hidden="true"></i>Utilities
+                                        </td>
+                                        <td>Electricity bill</td>
+                                        <td class="text-danger fw-semibold">− $580.00</td>
+                                        <td>29 Sep 2026</td>
+                                        <td><span class="status-badge st-paid">Paid</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>EXP-5009</strong></td>
+                                        <td><i class="fa fa-users text-info me-1" aria-hidden="true"></i>Salaries</td>
+                                        <td>Staff salaries — September</td>
+                                        <td class="text-danger fw-semibold">− $8,400.00</td>
+                                        <td>28 Sep 2026</td>
+                                        <td><span class="status-badge st-paid">Paid</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>EXP-5008</strong></td>
+                                        <td><i class="fa fa-medkit text-success me-1" aria-hidden="true"></i>Medical
+                                            Supplies</td>
+                                        <td>Gloves, syringes, bandages</td>
+                                        <td class="text-danger fw-semibold">− $620.00</td>
+                                        <td>26 Sep 2026</td>
+                                        <td><span class="status-badge st-paid">Paid</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>EXP-5007</strong></td>
+                                        <td><i class="fa fa-wrench text-secondary me-1"
+                                                aria-hidden="true"></i>Maintenance</td>
+                                        <td>AC repair in waiting area</td>
+                                        <td class="text-danger fw-semibold">− $180.00</td>
+                                        <td>25 Sep 2026</td>
+                                        <td><span class="status-badge st-pending">Pending</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ============ NEW INVOICE MODAL ============ -->
+    <div class="modal fade" id="newInvoiceModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fa fa-file-text-o me-2" aria-hidden="true"></i>Create New Invoice
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Patient <span class="text-danger">*</span></label>
+                                <div class="input-icon-wrap">
+                                    <i class="fa fa-user input-icon" aria-hidden="true"></i>
+                                    <select class="form-select">
+                                        <option value="">— Select patient —</option>
+                                        <option>John Smith (MRN-1001)</option>
+                                        <option>Maria Ahmed (MRN-1002)</option>
+                                        <option>Ravi Kumar (MRN-1003)</option>
+                                        <option>Lisa Park (MRN-1004)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Doctor</label>
+                                <div class="input-icon-wrap">
+                                    <i class="fa fa-user-md input-icon" aria-hidden="true"></i>
+                                    <select class="form-select">
+                                        <option value="">— Select doctor —</option>
+                                        <option>Dr. Sarah Lee</option>
+                                        <option>Dr. James Wong</option>
+                                        <option>Dr. Aisha Khan</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Date</label>
+                                <div class="input-icon-wrap">
+                                    <i class="fa fa-calendar input-icon" aria-hidden="true"></i>
+                                    <input type="date" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Service Type</label>
+                                <div class="input-icon-wrap">
+                                    <i class="fa fa-stethoscope input-icon" aria-hidden="true"></i>
+                                    <select class="form-select">
+                                        <option>Consultation</option>
+                                        <option>Procedure</option>
+                                        <option>Lab Test</option>
+                                        <option>Follow-up</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Amount ($) <span class="text-danger">*</span></label>
+                                <div class="input-icon-wrap">
+                                    <i class="fa fa-money input-icon" aria-hidden="true"></i>
+                                    <input type="number" class="form-control" placeholder="0.00">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Payment Method</label>
+                                <div class="input-icon-wrap">
+                                    <i class="fa fa-credit-card input-icon" aria-hidden="true"></i>
+                                    <select class="form-select">
+                                        <option>Cash</option>
+                                        <option>Card</option>
+                                        <option>UPI / Online</option>
+                                        <option>Insurance</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Payment Status</label>
+                                <div class="input-icon-wrap">
+                                    <i class="fa fa-info-circle input-icon" aria-hidden="true"></i>
+                                    <select class="form-select">
+                                        <option>Paid</option>
+                                        <option>Pending</option>
+                                        <option>Partial</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Discount (%)</label>
+                                <div class="input-icon-wrap">
+                                    <i class="fa fa-tag input-icon" aria-hidden="true"></i>
+                                    <input type="number" class="form-control" placeholder="0" min="0" max="100">
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Notes</label>
+                                <textarea class="form-control" rows="2"
+                                    placeholder="Any additional notes on this invoice..."></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light border" data-bs-dismiss="modal">
+                        <i class="fa fa-times me-1" aria-hidden="true"></i> Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary">
+                        <i class="fa fa-check me-1" aria-hidden="true"></i> Create Invoice
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ NEW EXPENSE MODAL ============ -->
+    <div class="modal fade" id="newExpenseModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fa fa-minus-circle me-2" aria-hidden="true"></i>Add New Expense
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Category <span class="text-danger">*</span></label>
+                                <div class="input-icon-wrap">
+                                    <i class="fa fa-tags input-icon" aria-hidden="true"></i>
+                                    <select class="form-select">
+                                        <option value="">— Select —</option>
+                                        <option>Medical Supplies</option>
+                                        <option>Lab Supplies</option>
+                                        <option>Utilities</option>
+                                        <option>Salaries</option>
+                                        <option>Maintenance</option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Amount ($) <span class="text-danger">*</span></label>
+                                <div class="input-icon-wrap">
+                                    <i class="fa fa-money input-icon" aria-hidden="true"></i>
+                                    <input type="number" class="form-control" placeholder="0.00">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Date</label>
+                                <div class="input-icon-wrap">
+                                    <i class="fa fa-calendar input-icon" aria-hidden="true"></i>
+                                    <input type="date" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Paid By</label>
+                                <div class="input-icon-wrap">
+                                    <i class="fa fa-user-circle-o input-icon" aria-hidden="true"></i>
+                                    <select class="form-select">
+                                        <option>Admin User</option>
+                                        <option>Reception Desk</option>
+                                        <option>Accountant</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Description</label>
+                                <textarea class="form-control" rows="2" placeholder="Expense description..."></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light border" data-bs-dismiss="modal">
+                        <i class="fa fa-times me-1" aria-hidden="true"></i> Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary">
+                        <i class="fa fa-check me-1" aria-hidden="true"></i> Save Expense
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

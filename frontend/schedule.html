@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule - Clinic Admin</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 4 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <style>
+        :root {
+            --sidebar-bg: #0f172a;
+            --sidebar-hover: #1e293b;
+            --sidebar-text: #cbd5e1;
+            --accent: #38bdf8;
+            --sidebar-w: 260px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+            overflow-x: hidden;
+        }
+
+        /* ---------- SIDEBAR ---------- */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            overflow-y: auto;
+            transition: transform .3s ease;
+            z-index: 1040;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+
+        .brand {
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #020617;
+            border-bottom: 1px solid #1e293b;
+            flex-shrink: 0;
+        }
+
+        .brand i {
+            font-size: 22px;
+            color: var(--accent);
+            background: rgba(56, 189, 248, .12);
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .brand-text h2 {
+            font-size: 16px;
+            color: #fff;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .brand-text span {
+            font-size: 10px;
+            color: #64748b;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .nav-side {
+            padding: 10px 0;
+            flex: 1;
+        }
+
+        .nav-side .nav-title {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: #475569;
+            padding: 14px 22px 6px;
+            font-weight: 600;
+        }
+
+        .nav-side .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 22px;
+            color: var(--sidebar-text);
+            font-size: 14px;
+            text-decoration: none;
+            border-left: 3px solid transparent;
+            transition: all .2s;
+            cursor: pointer;
+        }
+
+        .nav-side .nav-link:hover {
+            background: var(--sidebar-hover);
+            color: #fff;
+        }
+
+        .nav-side .nav-link.active {
+            background: var(--sidebar-hover);
+            color: #fff;
+            border-left-color: var(--accent);
+        }
+
+        .nav-side .nav-link .fa:first-child {
+            width: 18px;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .nav-side .nav-link .arrow {
+            margin-left: auto;
+            font-size: 11px;
+            transition: transform .2s;
+        }
+
+        .nav-side .nav-link[aria-expanded="true"] .arrow {
+            transform: rotate(90deg);
+        }
+
+        .submenu {
+            background: #020617;
+        }
+
+        .submenu .nav-link {
+            padding: 9px 22px 9px 52px;
+            font-size: 13px;
+            border-left: none;
+        }
+
+        .submenu .nav-link .fa {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .badge-pill-sm {
+            margin-left: auto;
+            background: #ef4444;
+            color: #fff;
+            font-size: 10px;
+            padding: 2px 7px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .sidebar-footer {
+            border-top: 1px solid #1e293b;
+            background: #020617;
+            flex-shrink: 0;
+        }
+
+        .sidebar-footer .nav-link {
+            color: #f87171;
+        }
+
+        .sidebar-footer .nav-link:hover {
+            background: #450a0a;
+            color: #fecaca;
+        }
+
+        /* ---------- MAIN ---------- */
+        .main-wrap {
+            margin-left: var(--sidebar-w);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: margin-left .3s ease;
+        }
+
+        .topbar {
+            background: #fff;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #334155;
+            cursor: pointer;
+            display: none;
+            padding: 4px 8px;
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .search-wrap {
+            margin-left: auto;
+            position: relative;
+        }
+
+        .search-wrap input {
+            padding: 8px 12px 8px 36px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13px;
+            width: 260px;
+            outline: none;
+            background: #f8fafc;
+            transition: all .2s;
+        }
+
+        .search-wrap input:focus {
+            border-color: var(--accent);
+            background: #fff;
+        }
+
+        .search-wrap .fa-search {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        .top-icons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .top-icons .icon-btn {
+            position: relative;
+            color: #475569;
+            font-size: 18px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 4px;
+            transition: color .2s;
+        }
+
+        .top-icons .icon-btn:hover {
+            color: #0f172a;
+        }
+
+        .top-icons .dot {
+            position: absolute;
+            top: -2px;
+            right: -6px;
+            background: #ef4444;
+            color: #fff;
+            font-size: 9px;
+            min-width: 16px;
+            height: 16px;
+            padding: 0 4px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .user-chip {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-left: 18px;
+            border-left: 1px solid #e2e8f0;
+            cursor: pointer;
+            background: none;
+            border-top: none;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .user-chip .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #38bdf8, #6366f1);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .user-chip .info {
+            text-align: left;
+        }
+
+        .user-chip .info strong {
+            display: block;
+            font-size: 13px;
+            color: #0f172a;
+        }
+
+        .user-chip .info span {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        /* Content */
+        .content {
+            padding: 24px;
+            flex: 1;
+        }
+
+        /* Stat cards */
+        .stat-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
+            transition: transform .2s, box-shadow .2s;
+            height: 100%;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 24px rgba(0, 0, 0, .08);
+        }
+
+        .stat-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .bg-grad-blue {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+
+        .bg-grad-green {
+            background: linear-gradient(135deg, #10b981, #047857);
+        }
+
+        .bg-grad-orange {
+            background: linear-gradient(135deg, #f59e0b, #b45309);
+        }
+
+        .bg-grad-purple {
+            background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+        }
+
+        .bg-grad-red {
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+        }
+
+        .bg-grad-teal {
+            background: linear-gradient(135deg, #14b8a6, #0f766e);
+        }
+
+        .stat-info h3 {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .stat-info p {
+            font-size: 12px;
+            color: #64748b;
+            margin: 2px 0 0;
+        }
+
+        /* Panels */
+        .panel {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .panel-head {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .panel-head h6 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .panel-head .fa {
+            color: #64748b;
+        }
+
+        .panel-body {
+            padding: 18px 20px;
+        }
+
+        /* Overlay for mobile */
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .5);
+            z-index: 1035;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity .3s;
+        }
+
+        .sidebar-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Input with leading icon */
+        .input-icon-wrap {
+            position: relative;
+        }
+
+        .input-icon-wrap .input-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 13px;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .input-icon-wrap .form-control,
+        .input-icon-wrap .form-select {
+            padding-left: 34px;
+            font-size: 13.5px;
+            border-color: #e2e8f0;
+            transition: all .2s;
+        }
+
+        .input-icon-wrap .form-control:focus,
+        .input-icon-wrap .form-select:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, .15);
+        }
+
+        .input-icon-wrap .form-select {
+            background-position: right 12px center;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16'%3E%3Cpath fill='%2394a3b8' d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-size: 10px;
+        }
+
+        /* Form labels */
+        .form-label {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, #0ea5e9, #6366f1);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0284c7, #4f46e5);
+        }
+
+        .btn {
+            border-radius: 8px;
+            font-size: 13.5px;
+            padding: 8px 16px;
+        }
+
+        .btn-sm {
+            font-size: 12.5px;
+            padding: 6px 12px;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb-item a {
+            color: #64748b;
+        }
+
+        .breadcrumb-item.active {
+            color: #0f172a;
+            font-weight: 500;
+        }
+
+        /* Nav pills */
+        .nav-pills .nav-link {
+            font-size: 13px;
+            color: #475569;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: 500;
+        }
+
+        .nav-pills .nav-link:hover {
+            background: #f1f5f9;
+        }
+
+        .nav-pills .nav-link.active {
+            background: linear-gradient(135deg, #0ea5e9, #6366f1);
+            color: #fff;
+        }
+
+        .nav-pills .nav-link .fa {
+            margin-right: 6px;
+        }
+
+        /* Dropdown menu */
+        .dropdown-menu {
+            font-size: 13px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            padding: 6px;
+        }
+
+        .dropdown-item {
+            border-radius: 6px;
+            padding: 7px 10px;
+        }
+
+        .dropdown-item:hover {
+            background: #f1f5f9;
+        }
+
+        /* Modal */
+        .modal-content {
+            border-radius: 14px;
+            border: none;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid #f1f5f9;
+            padding: 18px 22px;
+        }
+
+        .modal-title {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .modal-body {
+            padding: 22px;
+        }
+
+        .modal-footer {
+            border-top: 1px solid #f1f5f9;
+            padding: 14px 22px;
+        }
+
+        /* ============ WEEKLY CALENDAR GRID ============ */
+        .calendar-wrap {
+            overflow-x: auto;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: 80px repeat(7, minmax(140px, 1fr));
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            min-width: 1080px;
+            background: #fff;
+        }
+
+        /* Header row */
+        .cal-header {
+            background: #f8fafc;
+            padding: 12px 10px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: #475569;
+            border-bottom: 1px solid #e2e8f0;
+            border-right: 1px solid #e2e8f0;
+        }
+
+        .cal-header:last-child {
+            border-right: none;
+        }
+
+        .cal-header .day-name {
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            font-size: 10.5px;
+            color: #64748b;
+        }
+
+        .cal-header .day-num {
+            font-size: 15px;
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        .cal-header.today .day-num {
+            color: #0ea5e9;
+        }
+
+        .cal-header.today {
+            background: #f0f9ff;
+        }
+
+        /* Time column */
+        .cal-time {
+            background: #fafbfc;
+            padding: 10px 8px;
+            font-size: 11px;
+            color: #94a3b8;
+            text-align: right;
+            font-weight: 600;
+            border-bottom: 1px solid #f1f5f9;
+            border-right: 1px solid #e2e8f0;
+            min-height: 70px;
+        }
+
+        /* Time slot cells */
+        .cal-cell {
+            background: #fff;
+            border-bottom: 1px solid #f1f5f9;
+            border-right: 1px solid #f1f5f9;
+            padding: 6px;
+            min-height: 70px;
+            position: relative;
+            transition: background .15s;
+        }
+
+        .cal-cell:hover {
+            background: #f8fafc;
+        }
+
+        .cal-cell:last-child {
+            border-right: none;
+        }
+
+        /* Appointment block */
+        .apt-block {
+            display: block;
+            text-decoration: none;
+            border-left: 3px solid;
+            border-radius: 6px;
+            padding: 6px 8px;
+            margin-bottom: 4px;
+            font-size: 11.5px;
+            line-height: 1.3;
+            transition: transform .15s, box-shadow .15s;
+            color: #0f172a;
+        }
+
+        .apt-block:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, .08);
+            color: #0f172a;
+        }
+
+        .apt-block .apt-time {
+            font-weight: 700;
+            font-size: 11px;
+            display: block;
+        }
+
+        .apt-block .apt-name {
+            font-weight: 600;
+            display: block;
+            font-size: 11.5px;
+        }
+
+        .apt-block .apt-doc {
+            color: #64748b;
+            font-size: 10.5px;
+            display: block;
+        }
+
+        .apt-blue {
+            background: #e0f2fe;
+            border-left-color: #0284c7;
+        }
+
+        .apt-blue .apt-time {
+            color: #0369a1;
+        }
+
+        .apt-green {
+            background: #dcfce7;
+            border-left-color: #047857;
+        }
+
+        .apt-green .apt-time {
+            color: #047857;
+        }
+
+        .apt-orange {
+            background: #fef3c7;
+            border-left-color: #b45309;
+        }
+
+        .apt-orange .apt-time {
+            color: #b45309;
+        }
+
+        .apt-purple {
+            background: #ede9fe;
+            border-left-color: #6d28d9;
+        }
+
+        .apt-purple .apt-time {
+            color: #6d28d9;
+        }
+
+        .apt-red {
+            background: #fee2e2;
+            border-left-color: #b91c1c;
+        }
+
+        .apt-red .apt-time {
+            color: #b91c1c;
+        }
+
+        .apt-gray {
+            background: #f1f5f9;
+            border-left-color: #64748b;
+        }
+
+        .apt-gray .apt-time {
+            color: #475569;
+        }
+
+        /* Doctor legend */
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12.5px;
+            color: #475569;
+            margin-bottom: 6px;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+
+        /* Today highlight */
+        .cal-cell.today {
+            background: #fafcff;
+        }
+
+        /* Now line */
+        .now-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #ef4444;
+            z-index: 2;
+        }
+
+        .now-line::before {
+            content: '';
+            position: absolute;
+            left: -4px;
+            top: -3px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ef4444;
+        }
+
+        /* Status badges */
+        .status-badge {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .st-confirmed {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .st-pending {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .st-completed {
+            background: #d1fae5;
+            color: #047857;
+        }
+
+        .st-cancelled {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 991.98px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-wrap {
+                margin-left: 0;
+            }
+
+            .toggle-btn {
+                display: inline-block;
+            }
+
+            .search-wrap input {
+                width: 180px;
+            }
+
+            .user-chip .info {
+                display: none;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .search-wrap {
+                display: none;
+            }
+
+            .content {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ============ SIDEBAR ============ -->
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+            <i class="fa fa-heartbeat" aria-hidden="true"></i>
+            <div class="brand-text">
+                <h2>MediCare Clinic</h2>
+                <span>Admin Panel</span>
+            </div>
+        </div>
+
+        <nav class="nav-side">
+
+            <a href="dashboard.html" class="nav-link">
+                <i class="fa fa-dashboard" aria-hidden="true"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="schedule.html" class="nav-link active">
+                <i class="fa fa-calendar" aria-hidden="true"></i>
+                <span>Schedule</span>
+            </a>
+
+            <a class="nav-link" data-bs-toggle="collapse" href="#menuAppointment" role="button" aria-expanded="false">
+                <i class="fa fa-calendar-check-o" aria-hidden="true"></i>
+                <span>Appointments</span>
+                <i class="fa fa-angle-right arrow" aria-hidden="true"></i>
+            </a>
+            <div class="collapse submenu" id="menuAppointment">
+                <a href="appointments/create.html" class="nav-link">
+                    <i class="fa fa-plus-circle" aria-hidden="true"></i> New Appointment
+                </a>
+                <a href="appointments/appointments.html" class="nav-link">
+                    <i class="fa fa-list-ul" aria-hidden="true"></i> All Appointments
+                </a>
+            </div>
+
+            <a class="nav-link" data-bs-toggle="collapse" href="#menuDoctors" role="button" aria-expanded="false">
+                <i class="fa fa-user-md" aria-hidden="true"></i>
+                <span>Doctors</span>
+                <i class="fa fa-angle-right arrow" aria-hidden="true"></i>
+            </a>
+            <div class="collapse submenu" id="menuDoctors">
+                <a href="doctors/create.html" class="nav-link">
+                    <i class="fa fa-user-plus" aria-hidden="true"></i> Create Doctor
+                </a>
+                <a href="doctors/doctors.html" class="nav-link">
+                    <i class="fa fa-users" aria-hidden="true"></i> All Doctors
+                </a>
+                <a href="doctors/specislists.html" class="nav-link">
+                    <i class="fa fa-stethoscope" aria-hidden="true"></i> Specialists
+                </a>
+            </div>
+
+            <a class="nav-link" data-bs-toggle="collapse" href="#menuPatients" role="button" aria-expanded="false">
+                <i class="fa fa-user" aria-hidden="true"></i>
+                <span>Patients</span>
+                <i class="fa fa-angle-right arrow" aria-hidden="true"></i>
+            </a>
+            <div class="collapse submenu" id="menuPatients">
+                <a href="patients/create.html" class="nav-link">
+                    <i class="fa fa-user-plus" aria-hidden="true"></i> New Patient
+                </a>
+                <a href="patients/patients.html" class="nav-link">
+                    <i class="fa fa-users" aria-hidden="true"></i> All Patients
+                </a>
+            </div>
+
+            <a href="complaints.html" class="nav-link">
+                <i class="fa fa-comments-o" aria-hidden="true"></i>
+                <span>Complaints</span>
+                <span class="badge-pill-sm">3</span>
+            </a>
+
+            <a href="accounts.html" class="nav-link">
+                <i class="fa fa-money" aria-hidden="true"></i>
+                <span>Accounts</span>
+            </a>
+
+            <a href="users.html" class="nav-link">
+                <i class="fa fa-user-circle-o" aria-hidden="true"></i>
+                <span>User Management</span>
+            </a>
+
+            <a href="#" class="nav-link">
+                <i class="fa fa-sign-out" aria-hidden="true"></i>
+                <span>Logout</span>
+            </a>
+
+        </nav>
+    </aside>
+
+    <div class="sidebar-overlay" id="overlay"></div>
+
+    <!-- ============ MAIN ============ -->
+    <div class="main-wrap" id="mainWrap">
+
+        <!-- Topbar -->
+        <header class="topbar">
+            <button class="toggle-btn" id="toggleBtn" aria-label="Toggle sidebar" data-bs-toggle="offcanvas"
+                data-bs-target="#sidebar" aria-controls="sidebar">
+                <i class="fa fa-bars" aria-hidden="true"></i>
+            </button>
+            <h1 class="page-title">Schedule</h1>
+
+            <div class="search-wrap">
+                <i class="fa fa-search" aria-hidden="true"></i>
+                <input type="text" placeholder="Search patients, doctors...">
+            </div>
+
+            <div class="top-icons">
+                <button class="icon-btn" title="Notifications">
+                    <i class="fa fa-bell-o" aria-hidden="true"></i>
+                    <span class="dot">5</span>
+                </button>
+                <button class="icon-btn" title="Messages">
+                    <i class="fa fa-envelope-o" aria-hidden="true"></i>
+                    <span class="dot">2</span>
+                </button>
+                <div class="dropdown">
+                    <button class="user-chip" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="avatar">AD</div>
+                        <div class="info">
+                            <strong>Admin User</strong>
+                            <span>Super Admin</span>
+                        </div>
+                        <i class="fa fa-angle-down" style="font-size:12px;color:#64748b;margin-left:6px;"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                        <li><a class="dropdown-item" href="#"><i class="fa fa-user-o me-2"></i>My Profile</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fa fa-cog me-2"></i>Settings</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item text-danger" href="#"><i class="fa fa-sign-out me-2"></i>Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+
+        <!-- ================= MAIN CONTENT: SCHEDULE ================= -->
+        <main class="content">
+
+            <!-- Page Header -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+                <div>
+                    <h4 class="mb-1 fw-bold">Schedule</h4>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0 small">
+                            <li class="breadcrumb-item"><a href="dashboard.html"
+                                    class="text-decoration-none">Dashboard</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Schedule</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <a href="appointments/create.html" class="btn btn-primary btn-sm">
+                        <i class="fa fa-plus-circle me-1" aria-hidden="true"></i> New Appointment
+                    </a>
+                    <button class="btn btn-outline-primary btn-sm">
+                        <i class="fa fa-print me-1" aria-hidden="true"></i> Print Schedule
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm">
+                        <i class="fa fa-file-excel-o me-1" aria-hidden="true"></i> Export
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Stats Row -->
+            <div class="row g-3 mb-4">
+                <div class="col-sm-6 col-lg-3">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-grad-blue"><i class="fa fa-calendar-check-o" aria-hidden="true"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>48</h3>
+                            <p>Total Appointments (Week)</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-grad-green"><i class="fa fa-check-circle-o" aria-hidden="true"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>32</h3>
+                            <p>Confirmed</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-grad-orange"><i class="fa fa-clock-o" aria-hidden="true"></i></div>
+                        <div class="stat-info">
+                            <h3>12</h3>
+                            <p>Pending</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-grad-purple"><i class="fa fa-user-md" aria-hidden="true"></i></div>
+                        <div class="stat-info">
+                            <h3>8</h3>
+                            <p>Doctors Available</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters Card -->
+            <div class="panel mb-4">
+                <div class="panel-body">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-3">
+                            <label class="form-label">Doctor</label>
+                            <div class="input-icon-wrap">
+                                <i class="fa fa-user-md input-icon" aria-hidden="true"></i>
+                                <select class="form-select">
+                                    <option value="">All Doctors</option>
+                                    <option>Dr. Sarah Lee</option>
+                                    <option>Dr. James Wong</option>
+                                    <option>Dr. Aisha Khan</option>
+                                    <option>Dr. Michael Chen</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Department</label>
+                            <div class="input-icon-wrap">
+                                <i class="fa fa-building-o input-icon" aria-hidden="true"></i>
+                                <select class="form-select">
+                                    <option value="">All Departments</option>
+                                    <option>Cardiology</option>
+                                    <option>Dermatology</option>
+                                    <option>General Medicine</option>
+                                    <option>Orthopedics</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Status</label>
+                            <div class="input-icon-wrap">
+                                <i class="fa fa-filter input-icon" aria-hidden="true"></i>
+                                <select class="form-select">
+                                    <option value="">All</option>
+                                    <option>Confirmed</option>
+                                    <option>Pending</option>
+                                    <option>Completed</option>
+                                    <option>Cancelled</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">View</label>
+                            <div class="input-icon-wrap">
+                                <i class="fa fa-eye input-icon" aria-hidden="true"></i>
+                                <select class="form-select">
+                                    <option>Week</option>
+                                    <option>Day</option>
+                                    <option>Month</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-primary w-100">
+                                <i class="fa fa-search me-1" aria-hidden="true"></i> Apply
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Week Navigation + Calendar -->
+            <div class="panel">
+                <div class="panel-head flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="btn btn-sm btn-light border">
+                            <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        </button>
+                        <h6 class="mb-0 mx-2">
+                            <i class="fa fa-calendar me-2" aria-hidden="true"></i>
+                            29 Sep – 05 Oct 2026
+                        </h6>
+                        <button class="btn btn-sm btn-light border">
+                            <i class="fa fa-angle-right" aria-hidden="true"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary ms-2">Today</button>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-3">
+                        <div class="legend-item mb-0"><span class="legend-dot"
+                                style="background:#0284c7;"></span>Confirmed</div>
+                        <div class="legend-item mb-0"><span class="legend-dot"
+                                style="background:#b45309;"></span>Pending</div>
+                        <div class="legend-item mb-0"><span class="legend-dot"
+                                style="background:#047857;"></span>Completed</div>
+                        <div class="legend-item mb-0"><span class="legend-dot"
+                                style="background:#b91c1c;"></span>Cancelled</div>
+                    </div>
+                </div>
+
+                <div class="panel-body">
+                    <div class="calendar-wrap">
+                        <div class="calendar-grid">
+
+                            <!-- ========= HEADER ROW ========= -->
+                            <div class="cal-header">
+                                <span class="day-name">TIME</span>
+                            </div>
+                            <div class="cal-header">
+                                <span class="day-name">Mon</span>
+                                <span class="day-num">29</span>
+                            </div>
+                            <div class="cal-header">
+                                <span class="day-name">Tue</span>
+                                <span class="day-num">30</span>
+                            </div>
+                            <div class="cal-header today">
+                                <span class="day-name">Wed</span>
+                                <span class="day-num">01</span>
+                            </div>
+                            <div class="cal-header">
+                                <span class="day-name">Thu</span>
+                                <span class="day-num">02</span>
+                            </div>
+                            <div class="cal-header">
+                                <span class="day-name">Fri</span>
+                                <span class="day-num">03</span>
+                            </div>
+                            <div class="cal-header">
+                                <span class="day-name">Sat</span>
+                                <span class="day-num">04</span>
+                            </div>
+                            <div class="cal-header">
+                                <span class="day-name">Sun</span>
+                                <span class="day-num">05</span>
+                            </div>
+
+                            <!-- ========= 09:00 AM ========= -->
+                            <div class="cal-time">09:00 AM</div>
+                            <div class="cal-cell">
+                                <a href="#" class="apt-block apt-blue">
+                                    <span class="apt-time">09:00</span>
+                                    <span class="apt-name">John Smith</span>
+                                    <span class="apt-doc">Dr. Sarah Lee</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell">
+                                <a href="#" class="apt-block apt-green">
+                                    <span class="apt-time">09:15</span>
+                                    <span class="apt-name">Emma Nelson</span>
+                                    <span class="apt-doc">Dr. Aisha Khan</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell today">
+                                <div class="now-line"></div>
+                                <a href="#" class="apt-block apt-blue">
+                                    <span class="apt-time">09:00</span>
+                                    <span class="apt-name">Ahmed Hassan</span>
+                                    <span class="apt-doc">Dr. Sarah Lee</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell">
+                                <a href="#" class="apt-block apt-purple">
+                                    <span class="apt-time">09:30</span>
+                                    <span class="apt-name">Nadia Farooq</span>
+                                    <span class="apt-doc">Dr. Michael Chen</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell">
+                                <a href="#" class="apt-block apt-orange">
+                                    <span class="apt-time">09:00</span>
+                                    <span class="apt-name">Sara Khan</span>
+                                    <span class="apt-doc">Dr. James Wong</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell">
+                                <a href="#" class="apt-block apt-green">
+                                    <span class="apt-time">09:45</span>
+                                    <span class="apt-name">David Miller</span>
+                                    <span class="apt-doc">Dr. Aisha Khan</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell"></div>
+
+                            <!-- ========= 10:00 AM ========= -->
+                            <div class="cal-time">10:00 AM</div>
+                            <div class="cal-cell">
+                                <a href="#" class="apt-block apt-orange">
+                                    <span class="apt-time">10:00</span>
+                                    <span class="apt-name">Maria Ahmed</span>
+                                    <span class="apt-doc">Dr. James Wong</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell">
+                                <a href="#" class="apt-block apt-purple">
+                                    <span class="apt-time">10:30</span>
+                                    <span class="apt-name">Ravi Kumar</span>
+                                    <span class="apt-doc">Dr. Michael Chen</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell today">
+                                <a href="#" class="apt-block apt-blue">
+                                    <span class="apt-time">10:30</span>
+                                    <span class="apt-name">John Smith</span>
+                                    <span class="apt-doc">Dr. Sarah Lee</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell">
+                                <a href="#" class="apt-block apt-orange">
+                                    <span class="apt-time">10:15</span>
+                                    <span class="apt-name">Lisa Park</span>
+                                    <span class="apt-doc">Dr. James Wong</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell">
+                                <a href="#" class="apt-block apt-green">
+                                    <span class="apt-time">10:00</span>
+                                    <span class="apt-name">Ayesha Siddiqui</span>
+                                    <span class="apt-doc">Dr. Aisha Khan</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell">
+                                <a href="#" class="apt-block apt-red">
+                                    <span class="apt-time">10:45</span>
+                                    <span class="apt-name">Michael Reyes</span>
+                                    <span class="apt-doc">Dr. Sarah Lee</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell"></div>
+
+                            <!-- ========= 11:00 AM ========= -->
+                            <div class="cal-time">11:00 AM</div>
+                            <div class="cal-cell">
+                                <a href="#" class="apt-block apt-green">
+                                    <span class="apt-time">11:00</span>
+                                    <span class="apt-name">Ahmed Hassan</span>
+                                    <span class="apt-doc">Dr. Aisha Khan</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell">
+                                <a href="#" class="apt-block apt-blue">
+                                    <span class="apt-time">11:30</span>
+                                    <span class="apt-name">Ravi Kumar</span>
+                                    <span class="apt-doc">Dr. Sarah Lee</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell today">
+                                <a href="#" class="apt-block apt-orange">
+                                    <span class="apt-time">11:15</span>
+                                    <span class="apt-name">Maria Ahmed</span>
+                                    <span class="apt-doc">Dr. James Wong</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell">
+                                <a href="#" class="apt-block apt-green">
+                                    <span class="apt-time">11:00</span>
+                                    <span class="apt-name">Sara Khan</span>
+                                    <span class="apt-doc">Dr. Aisha Khan</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell"></div>
+                            <div class="cal-cell"></div>
+                            <div class="cal-cell"></div>
+
+                            <!-- ========= 12:00 PM ========= -->
+                            <div class="cal-time">12:00 PM</div>
+                            <div class="cal-cell">
+                                <a href="#" class="apt-block apt-orange">
+                                    <span class="apt-time">12:00</span>
+                                    <span class="apt-name">Nadia Farooq</span>
+                                    <span class="apt-doc">Dr. James Wong</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell"></div>
+                            <div class="cal-cell today">
+                                <a href="#" class="apt-block apt-purple">
+                                    <span class="apt-time">12:00</span>
+                                    <span class="apt-name">Emma Nelson</span>
+                                    <span class="apt-doc">Dr. Michael Chen</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell">
+                                <a href="#" class="apt-block apt-orange">
+                                    <span class="apt-time">12:30</span>
+                                    <span class="apt-name">Omar Bilal</span>
+                                    <span class="apt-doc">Dr. Sarah Lee</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell"></div>
+                            <div class="cal-cell"></div>
+                            <div class="cal-cell"></div>
+
+                            <!-- ========= 01:00 PM (LUNCH) ========= -->
+                            <div class="cal-time">01:00 PM</div>
+                            <div class="cal-cell" style="background:#fafbfc;"></div>
+                            <div class="cal-cell" style="background:#fafbfc;"></div>
+                            <div class="cal-cell today" style="background:#f0f9ff;"></div>
+                            <div class="cal-cell" style="background:#fafbfc;"></div>
+                            <div class="cal-cell" style="background:#fafbfc;"></div>
+                            <div class="cal-cell" style="background:#fafbfc;"></div>
+                            <div class="cal-cell"></div>
+
+                            <!-- ========= 02:00 PM ========= -->
+                            <div class="cal-time">02:00 PM</div>
+                            <div class="cal-cell">
+                                <a href="#" class="apt-block apt-blue">
+                                    <span class="apt-time">02:00</span>
+                                    <span class="apt-name">Ravi Kumar</span>
+                                    <span class="apt-doc">Dr. Sarah Lee</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell">
+                                <a href="#" class="apt-block apt-orange">
+                                    <span class="apt-time">02:30</span>
+                                    <span class="apt-name">Lisa Park</span>
+                                    <span class="apt-doc">Dr. James Wong</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell today">
+                                <a href="#" class="apt-block apt-green">
+                                    <span class="apt-time">02:00</span>
+                                    <span class="apt-name">Sara Khan</span>
+                                    <span class="apt-doc">Dr. Aisha Khan</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell">
+                                <a href="#" class="apt-block apt-purple">
+                                    <span class="apt-time">02:15</span>
+                                    <span class="apt-name">David Miller</span>
+                                    <span class="apt-doc">Dr. Michael Chen</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell"></div>
+                            <div class="cal-cell"></div>
+                            <div class="cal-cell"></div>
+
+                            <!-- ========= 03:00 PM ========= -->
+                            <div class="cal-time">03:00 PM</div>
+                            <div class="cal-cell">
+                                <a href="#" class="apt-block apt-green">
+                                    <span class="apt-time">03:00</span>
+                                    <span class="apt-name">Ayesha Siddiqui</span>
+                                    <span class="apt-doc">Dr. Aisha Khan</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell">
+                                <a href="#" class="apt-block apt-red">
+                                    <span class="apt-time">03:30</span>
+                                    <span class="apt-name">Lisa Park</span>
+                                    <span class="apt-doc">Dr. Michael Chen</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell today">
+                                <a href="#" class="apt-block apt-orange">
+                                    <span class="apt-time">03:00</span>
+                                    <span class="apt-name">Ahmed Hassan</span>
+                                    <span class="apt-doc">Dr. James Wong</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell">
+                                <a href="#" class="apt-block apt-blue">
+                                    <span class="apt-time">03:15</span>
+                                    <span class="apt-name">John Smith</span>
+                                    <span class="apt-doc">Dr. Sarah Lee</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell"></div>
+                            <div class="cal-cell"></div>
+                            <div class="cal-cell"></div>
+
+                            <!-- ========= 04:00 PM ========= -->
+                            <div class="cal-time">04:00 PM</div>
+                            <div class="cal-cell"></div>
+                            <div class="cal-cell">
+                                <a href="#" class="apt-block apt-blue">
+                                    <span class="apt-time">04:00</span>
+                                    <span class="apt-name">Michael Reyes</span>
+                                    <span class="apt-doc">Dr. Sarah Lee</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell today">
+                                <a href="#" class="apt-block apt-purple">
+                                    <span class="apt-time">04:30</span>
+                                    <span class="apt-name">Nadia Farooq</span>
+                                    <span class="apt-doc">Dr. Michael Chen</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell"></div>
+                            <div class="cal-cell">
+                                <a href="#" class="apt-block apt-orange">
+                                    <span class="apt-time">04:15</span>
+                                    <span class="apt-name">Maria Ahmed</span>
+                                    <span class="apt-doc">Dr. James Wong</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell"></div>
+                            <div class="cal-cell"></div>
+
+                            <!-- ========= 05:00 PM ========= -->
+                            <div class="cal-time">05:00 PM</div>
+                            <div class="cal-cell"></div>
+                            <div class="cal-cell"></div>
+                            <div class="cal-cell today"></div>
+                            <div class="cal-cell"></div>
+                            <div class="cal-cell">
+                                <a href="#" class="apt-block apt-green">
+                                    <span class="apt-time">05:00</span>
+                                    <span class="apt-name">Sara Khan</span>
+                                    <span class="apt-doc">Dr. Aisha Khan</span>
+                                </a>
+                            </div>
+                            <div class="cal-cell"></div>
+                            <div class="cal-cell"></div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Summary -->
+                <div class="panel-head border-top border-bottom-0 flex-wrap gap-2">
+                    <div class="small text-muted">
+                        <i class="fa fa-info-circle me-1" aria-hidden="true"></i>
+                        Click on any appointment block to view details.
+                    </div>
+                    <div class="small text-muted">
+                        <strong>48</strong> appointments this week • <strong>18</strong> today
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

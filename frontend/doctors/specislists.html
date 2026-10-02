@@ -1,0 +1,1649 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Specialists - Clinic Admin</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 4 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <style>
+        :root {
+            --sidebar-bg: #0f172a;
+            --sidebar-hover: #1e293b;
+            --sidebar-text: #cbd5e1;
+            --accent: #38bdf8;
+            --sidebar-w: 260px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+            overflow-x: hidden;
+        }
+
+        /* ---------- SIDEBAR ---------- */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            overflow-y: auto;
+            transition: transform .3s ease;
+            z-index: 1040;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+
+        .brand {
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #020617;
+            border-bottom: 1px solid #1e293b;
+            flex-shrink: 0;
+        }
+
+        .brand i {
+            font-size: 22px;
+            color: var(--accent);
+            background: rgba(56, 189, 248, .12);
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .brand-text h2 {
+            font-size: 16px;
+            color: #fff;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .brand-text span {
+            font-size: 10px;
+            color: #64748b;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .nav-side {
+            padding: 10px 0;
+            flex: 1;
+        }
+
+        .nav-side .nav-title {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: #475569;
+            padding: 14px 22px 6px;
+            font-weight: 600;
+        }
+
+        .nav-side .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 22px;
+            color: var(--sidebar-text);
+            font-size: 14px;
+            text-decoration: none;
+            border-left: 3px solid transparent;
+            transition: all .2s;
+            cursor: pointer;
+        }
+
+        .nav-side .nav-link:hover {
+            background: var(--sidebar-hover);
+            color: #fff;
+        }
+
+        .nav-side .nav-link.active {
+            background: var(--sidebar-hover);
+            color: #fff;
+            border-left-color: var(--accent);
+        }
+
+        .nav-side .nav-link .fa:first-child {
+            width: 18px;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .nav-side .nav-link .arrow {
+            margin-left: auto;
+            font-size: 11px;
+            transition: transform .2s;
+        }
+
+        .nav-side .nav-link[aria-expanded="true"] .arrow {
+            transform: rotate(90deg);
+        }
+
+        .submenu {
+            background: #020617;
+        }
+
+        .submenu .nav-link {
+            padding: 9px 22px 9px 52px;
+            font-size: 13px;
+            border-left: none;
+        }
+
+        .submenu .nav-link .fa {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .badge-pill-sm {
+            margin-left: auto;
+            background: #ef4444;
+            color: #fff;
+            font-size: 10px;
+            padding: 2px 7px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .sidebar-footer {
+            border-top: 1px solid #1e293b;
+            background: #020617;
+            flex-shrink: 0;
+        }
+
+        .sidebar-footer .nav-link {
+            color: #f87171;
+        }
+
+        .sidebar-footer .nav-link:hover {
+            background: #450a0a;
+            color: #fecaca;
+        }
+
+        /* ---------- MAIN ---------- */
+        .main-wrap {
+            margin-left: var(--sidebar-w);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: margin-left .3s ease;
+        }
+
+        .topbar {
+            background: #fff;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #334155;
+            cursor: pointer;
+            display: none;
+            padding: 4px 8px;
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .search-wrap {
+            margin-left: auto;
+            position: relative;
+        }
+
+        .search-wrap input {
+            padding: 8px 12px 8px 36px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13px;
+            width: 260px;
+            outline: none;
+            background: #f8fafc;
+            transition: all .2s;
+        }
+
+        .search-wrap input:focus {
+            border-color: var(--accent);
+            background: #fff;
+        }
+
+        .search-wrap .fa-search {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        .top-icons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .top-icons .icon-btn {
+            position: relative;
+            color: #475569;
+            font-size: 18px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 4px;
+            transition: color .2s;
+        }
+
+        .top-icons .icon-btn:hover {
+            color: #0f172a;
+        }
+
+        .top-icons .dot {
+            position: absolute;
+            top: -2px;
+            right: -6px;
+            background: #ef4444;
+            color: #fff;
+            font-size: 9px;
+            min-width: 16px;
+            height: 16px;
+            padding: 0 4px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .user-chip {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-left: 18px;
+            border-left: 1px solid #e2e8f0;
+            cursor: pointer;
+            background: none;
+            border-top: none;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .user-chip .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #38bdf8, #6366f1);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .user-chip .info {
+            text-align: left;
+        }
+
+        .user-chip .info strong {
+            display: block;
+            font-size: 13px;
+            color: #0f172a;
+        }
+
+        .user-chip .info span {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        /* Content */
+        .content {
+            padding: 24px;
+            flex: 1;
+        }
+
+        /* Stat cards */
+        .stat-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
+            transition: transform .2s, box-shadow .2s;
+            height: 100%;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 24px rgba(0, 0, 0, .08);
+        }
+
+        .stat-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .bg-grad-blue {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+
+        .bg-grad-green {
+            background: linear-gradient(135deg, #10b981, #047857);
+        }
+
+        .bg-grad-orange {
+            background: linear-gradient(135deg, #f59e0b, #b45309);
+        }
+
+        .bg-grad-purple {
+            background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+        }
+
+        .bg-grad-red {
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+        }
+
+        .bg-grad-teal {
+            background: linear-gradient(135deg, #14b8a6, #0f766e);
+        }
+
+        .stat-info h3 {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .stat-info p {
+            font-size: 12px;
+            color: #64748b;
+            margin: 2px 0 0;
+        }
+
+        /* Panels */
+        .panel {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .panel-head {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .panel-head h6 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .panel-head .fa {
+            color: #64748b;
+        }
+
+        .panel-body {
+            padding: 18px 20px;
+        }
+
+        /* Table */
+        .table thead th {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            color: #64748b;
+            font-weight: 600;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 12px 16px;
+        }
+
+        .table tbody td {
+            padding: 14px 16px;
+            font-size: 13px;
+            vertical-align: middle;
+        }
+
+        .table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .status-badge {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .st-active {
+            background: #d1fae5;
+            color: #047857;
+        }
+
+        .st-inactive {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        /* Overlay for mobile */
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .5);
+            z-index: 1035;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity .3s;
+        }
+
+        .sidebar-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Input with leading icon */
+        .input-icon-wrap {
+            position: relative;
+        }
+
+        .input-icon-wrap .input-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 13px;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .input-icon-wrap .form-control,
+        .input-icon-wrap .form-select {
+            padding-left: 34px;
+            font-size: 13.5px;
+            border-color: #e2e8f0;
+            transition: all .2s;
+        }
+
+        .input-icon-wrap textarea.form-control {
+            padding-left: 14px;
+        }
+
+        .input-icon-wrap .form-control:focus,
+        .input-icon-wrap .form-select:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, .15);
+        }
+
+        .input-icon-wrap .form-select {
+            background-position: right 12px center;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16'%3E%3Cpath fill='%2394a3b8' d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-size: 10px;
+        }
+
+        /* Form labels */
+        .form-label {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, #0ea5e9, #6366f1);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0284c7, #4f46e5);
+        }
+
+        .btn {
+            border-radius: 8px;
+            font-size: 13.5px;
+            padding: 8px 16px;
+        }
+
+        .btn-sm {
+            font-size: 12.5px;
+            padding: 6px 12px;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb-item a {
+            color: #64748b;
+        }
+
+        .breadcrumb-item.active {
+            color: #0f172a;
+            font-weight: 500;
+        }
+
+        /* Specialist icon badge */
+        .spec-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #e0f2fe, #dbeafe);
+            color: #0369a1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        /* Pagination */
+        .pagination .page-link {
+            color: #475569;
+            border-color: #e2e8f0;
+            border-radius: 6px;
+            margin: 0 2px;
+            font-size: 13px;
+            padding: 5px 10px;
+        }
+
+        .pagination .page-item.active .page-link {
+            background: linear-gradient(135deg, #0ea5e9, #6366f1);
+            border-color: transparent;
+            color: #fff;
+        }
+
+        .pagination .page-link:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        /* Dropdown menu */
+        .dropdown-menu {
+            font-size: 13px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            padding: 6px;
+        }
+
+        .dropdown-item {
+            border-radius: 6px;
+            padding: 7px 10px;
+        }
+
+        .dropdown-item:hover {
+            background: #f1f5f9;
+        }
+
+        /* Modal tweaks */
+        .modal-content {
+            border-radius: 14px;
+            border: none;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid #f1f5f9;
+            padding: 18px 22px;
+        }
+
+        .modal-title {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .modal-body {
+            padding: 22px;
+        }
+
+        .modal-footer {
+            border-top: 1px solid #f1f5f9;
+            padding: 14px 22px;
+        }
+
+        .modal-header .fa-stethoscope,
+        .modal-header .fa-pencil-square-o,
+        .modal-header .fa-exclamation-triangle {
+            color: #38bdf8;
+        }
+
+        .modal-header.bg-danger-soft {
+            background: #fef2f2;
+        }
+
+        .modal-header.bg-danger-soft .fa-exclamation-triangle {
+            color: #dc2626;
+        }
+
+        /* Icon picker */
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+            gap: 8px;
+            max-height: 180px;
+            overflow-y: auto;
+            padding: 8px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+        }
+
+        .icon-choice {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #475569;
+            cursor: pointer;
+            transition: all .15s;
+        }
+
+        .icon-choice:hover {
+            border-color: #38bdf8;
+            color: #0ea5e9;
+        }
+
+        .icon-choice.selected {
+            background: #e0f2fe;
+            border-color: #38bdf8;
+            color: #0369a1;
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, .25);
+        }
+
+        /* Color picker */
+        .color-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .color-choice {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform .15s;
+        }
+
+        .color-choice:hover {
+            transform: scale(1.1);
+        }
+
+        .color-choice.selected {
+            border-color: #0f172a;
+            box-shadow: 0 0 0 2px #fff inset;
+        }
+
+        /* Toast */
+        .toast-container {
+            z-index: 2000;
+        }
+
+        .toast {
+            border-radius: 10px;
+            border: none;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
+            font-size: 13.5px;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 48px 20px;
+            color: #64748b;
+        }
+
+        .empty-state .fa {
+            font-size: 48px;
+            opacity: .4;
+            margin-bottom: 12px;
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 991.98px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-wrap {
+                margin-left: 0;
+            }
+
+            .toggle-btn {
+                display: inline-block;
+            }
+
+            .search-wrap input {
+                width: 180px;
+            }
+
+            .user-chip .info {
+                display: none;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .search-wrap {
+                display: none;
+            }
+
+            .content {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ============ SIDEBAR ============ -->
+    <aside class="sidebar" id="sidebar">
+
+        <!-- Brand -->
+        <div class="brand">
+            <i class="fa fa-heartbeat" aria-hidden="true"></i>
+            <div class="brand-text">
+                <h2>MediCare Clinic</h2>
+                <span>Admin Panel</span>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="nav-side">
+
+            <!-- Dashboard -->
+            <a href="../dashboard.html" class="nav-link">
+                <i class="fa fa-dashboard" aria-hidden="true"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <!-- Schedule -->
+            <a href="../schedule.html" class="nav-link">
+                <i class="fa fa-calendar" aria-hidden="true"></i>
+                <span>Schedule</span>
+            </a>
+
+            <!-- Appointments (submenu) -->
+            <a class="nav-link" data-bs-toggle="collapse" href="#menuAppointment" role="button" aria-expanded="false">
+                <i class="fa fa-calendar-check-o" aria-hidden="true"></i>
+                <span>Appointments</span>
+                <i class="fa fa-angle-right arrow" aria-hidden="true"></i>
+            </a>
+            <div class="collapse submenu" id="menuAppointment">
+                <a href="../appointments/create.html" class="nav-link">
+                    <i class="fa fa-plus-circle" aria-hidden="true"></i> New Appointment
+                </a>
+                <a href="../appointments/appointments.html" class="nav-link">
+                    <i class="fa fa-list-ul" aria-hidden="true"></i> All Appointments
+                </a>
+            </div>
+
+            <!-- Doctors (submenu) -->
+            <a class="nav-link" data-bs-toggle="collapse" href="#menuDoctors" role="button" aria-expanded="true">
+                <i class="fa fa-user-md" aria-hidden="true"></i>
+                <span>Doctors</span>
+                <i class="fa fa-angle-right arrow" aria-hidden="true"></i>
+            </a>
+            <div class="collapse submenu show" id="menuDoctors">
+                <a href="create.html" class="nav-link">
+                    <i class="fa fa-user-plus" aria-hidden="true"></i> Create Doctor
+                </a>
+                <a href="doctors.html" class="nav-link">
+                    <i class="fa fa-users" aria-hidden="true"></i> All Doctors
+                </a>
+                <a href="specislists.html" class="nav-link active">
+                    <i class="fa fa-stethoscope" aria-hidden="true"></i> Specialists
+                </a>
+            </div>
+
+            <!-- Patients (submenu) -->
+            <a class="nav-link" data-bs-toggle="collapse" href="#menuPatients" role="button" aria-expanded="false">
+                <i class="fa fa-user" aria-hidden="true"></i>
+                <span>Patients</span>
+                <i class="fa fa-angle-right arrow" aria-hidden="true"></i>
+            </a>
+            <div class="collapse submenu" id="menuPatients">
+                <a href="../patients/create.html" class="nav-link">
+                    <i class="fa fa-user-plus" aria-hidden="true"></i> New Patient
+                </a>
+                <a href="../patients/patients.html" class="nav-link">
+                    <i class="fa fa-users" aria-hidden="true"></i> All Patients
+                </a>
+            </div>
+
+            <!-- Complaints -->
+            <a href="../complaints.html" class="nav-link">
+                <i class="fa fa-comments-o" aria-hidden="true"></i>
+                <span>Complaints</span>
+                <span class="badge-pill-sm">3</span>
+            </a>
+
+            <!-- Accounts -->
+            <a href="../accounts.html" class="nav-link">
+                <i class="fa fa-money" aria-hidden="true"></i>
+                <span>Accounts</span>
+            </a>
+
+            <!-- User Management -->
+            <a href="../users.html" class="nav-link">
+                <i class="fa fa-user-circle-o" aria-hidden="true"></i>
+                <span>User Management</span>
+            </a>
+
+            <!-- Logout -->
+            <a href="#" class="nav-link">
+                <i class="fa fa-sign-out" aria-hidden="true"></i>
+                <span>Logout</span>
+            </a>
+
+        </nav>
+    </aside>
+
+    <!-- Overlay (mobile) -->
+    <div class="sidebar-overlay" id="overlay"></div>
+
+    <!-- ============ MAIN ============ -->
+    <div class="main-wrap" id="mainWrap">
+
+        <!-- Topbar -->
+        <header class="topbar">
+            <button class="toggle-btn" id="toggleBtn" aria-label="Toggle sidebar">
+                <i class="fa fa-bars" aria-hidden="true"></i>
+            </button>
+            <h1 class="page-title">Specialists</h1>
+
+            <div class="search-wrap">
+                <i class="fa fa-search" aria-hidden="true"></i>
+                <input type="text" placeholder="Search patients, doctors...">
+            </div>
+
+            <div class="top-icons">
+                <button class="icon-btn" title="Notifications">
+                    <i class="fa fa-bell-o" aria-hidden="true"></i>
+                    <span class="dot">5</span>
+                </button>
+                <button class="icon-btn" title="Messages">
+                    <i class="fa fa-envelope-o" aria-hidden="true"></i>
+                    <span class="dot">2</span>
+                </button>
+                <div class="dropdown">
+                    <button class="user-chip" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="avatar">AD</div>
+                        <div class="info">
+                            <strong>Admin User</strong>
+                            <span>Super Admin</span>
+                        </div>
+                        <i class="fa fa-angle-down" style="font-size:12px;color:#64748b;margin-left:6px;"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                        <li><a class="dropdown-item" href="#"><i class="fa fa-user-o me-2"></i>My Profile</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fa fa-cog me-2"></i>Settings</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item text-danger" href="#"><i class="fa fa-sign-out me-2"></i>Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+
+        <!-- ================= MAIN CONTENT: SPECIALISTS ================= -->
+        <main class="content">
+
+            <!-- Page Header -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+                <div>
+                    <h4 class="mb-1 fw-bold">Specialists / Specializations</h4>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0 small">
+                            <li class="breadcrumb-item"><a href="../dashboard.html"
+                                    class="text-decoration-none">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="doctors.html" class="text-decoration-none">Doctors</a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">Specialists</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#specialistModal"
+                        onclick="openCreateModal()">
+                        <i class="fa fa-plus-circle me-1" aria-hidden="true"></i> Add Specialist
+                    </button>
+                    <a href="doctors.html" class="btn btn-outline-primary btn-sm">
+                        <i class="fa fa-users me-1" aria-hidden="true"></i> All Doctors
+                    </a>
+                </div>
+            </div>
+
+            <!-- Quick Stats Row -->
+            <div class="row g-3 mb-4">
+                <div class="col-sm-6 col-lg-3">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-grad-blue"><i class="fa fa-stethoscope" aria-hidden="true"></i></div>
+                        <div class="stat-info">
+                            <h3 id="statTotal">0</h3>
+                            <p>Total Specializations</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-grad-green"><i class="fa fa-check-circle-o" aria-hidden="true"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="statActive">0</h3>
+                            <p>Active</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-grad-orange"><i class="fa fa-user-md" aria-hidden="true"></i></div>
+                        <div class="stat-info">
+                            <h3 id="statDoctors">0</h3>
+                            <p>Doctors Assigned</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-grad-purple"><i class="fa fa-eye-slash" aria-hidden="true"></i></div>
+                        <div class="stat-info">
+                            <h3 id="statInactive">0</h3>
+                            <p>Inactive</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters + Search -->
+            <div class="panel mb-4">
+                <div class="panel-body">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-4">
+                            <label class="form-label">Search</label>
+                            <div class="input-icon-wrap">
+                                <i class="fa fa-search input-icon" aria-hidden="true"></i>
+                                <input type="text" class="form-control" id="searchInput"
+                                    placeholder="Search by name or code...">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Status</label>
+                            <div class="input-icon-wrap">
+                                <i class="fa fa-filter input-icon" aria-hidden="true"></i>
+                                <select class="form-select" id="filterStatus">
+                                    <option value="">All Status</option>
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Sort By</label>
+                            <div class="input-icon-wrap">
+                                <i class="fa fa-sort input-icon" aria-hidden="true"></i>
+                                <select class="form-select" id="sortBy">
+                                    <option value="name">Name (A–Z)</option>
+                                    <option value="name-desc">Name (Z–A)</option>
+                                    <option value="doctors">Doctors (High → Low)</option>
+                                    <option value="date">Newest First</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-light border w-100" onclick="resetFilters()">
+                                <i class="fa fa-refresh me-1" aria-hidden="true"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Specialists Table Card -->
+            <div class="panel">
+                <div class="panel-head">
+                    <h6><i class="fa fa-stethoscope me-2" aria-hidden="true"></i>Specializations List</h6>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-light text-dark border" id="countBadge">Showing 0</span>
+                        <button class="btn btn-sm btn-light border" title="Export CSV" onclick="exportCSV()">
+                            <i class="fa fa-file-excel-o" aria-hidden="true"></i> Export
+                        </button>
+                        <button class="btn btn-sm btn-light border" title="Print" onclick="window.print()">
+                            <i class="fa fa-print" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th style="width:36px;">
+                                    <input type="checkbox" class="form-check-input" id="selectAll">
+                                </th>
+                                <th>Specialization</th>
+                                <th>Code</th>
+                                <th>Description</th>
+                                <th>Doctors</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="specialistsTbody">
+                            <!-- Rows injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Empty State (hidden by default) -->
+                <div class="empty-state d-none" id="emptyState">
+                    <i class="fa fa-stethoscope d-block" aria-hidden="true"></i>
+                    <h6 class="mb-1">No specializations found</h6>
+                    <p class="mb-3 small">Try adjusting your search or add a new specialization.</p>
+                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#specialistModal"
+                        onclick="openCreateModal()">
+                        <i class="fa fa-plus-circle me-1" aria-hidden="true"></i> Add Specialist
+                    </button>
+                </div>
+
+                <!-- Pagination -->
+                <div
+                    class="panel-head border-top border-bottom-0 d-flex flex-wrap justify-content-between align-items-center gap-2">
+                    <div class="small text-muted" id="paginationInfo">
+                        Showing <strong>0</strong> specializations
+                    </div>
+                    <nav>
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#"><i class="fa fa-angle-left" aria-hidden="true"></i></a>
+                            </li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#"><i class="fa fa-angle-right" aria-hidden="true"></i></a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ============ ADD / EDIT SPECIALIST MODAL ============ -->
+    <div class="modal fade" id="specialistModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fa fa-stethoscope me-2" aria-hidden="true"></i>
+                        <span id="modalTitle">Add New Specialist</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="specialistForm" novalidate>
+                        <input type="hidden" id="specialistId">
+
+                        <div class="row g-3">
+
+                            <div class="col-md-8">
+                                <label class="form-label">Specialization Name <span class="text-danger">*</span></label>
+                                <div class="input-icon-wrap">
+                                    <i class="fa fa-stethoscope input-icon" aria-hidden="true"></i>
+                                    <input type="text" class="form-control" id="specName" placeholder="e.g. Cardiology"
+                                        required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Code <span class="text-danger">*</span></label>
+                                <div class="input-icon-wrap">
+                                    <i class="fa fa-hashtag input-icon" aria-hidden="true"></i>
+                                    <input type="text" class="form-control" id="specCode" placeholder="e.g. CARD"
+                                        required>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Description</label>
+                                <textarea class="form-control" id="specDesc" rows="2"
+                                    placeholder="Short description of this specialization..."></textarea>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Icon</label>
+                                <div class="icon-grid" id="iconGrid">
+                                    <!-- Injected by JS -->
+                                </div>
+                                <input type="hidden" id="specIcon" value="fa-stethoscope">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Color</label>
+                                <div class="color-grid" id="colorGrid">
+                                    <!-- Injected by JS -->
+                                </div>
+                                <input type="hidden" id="specColor" value="#0ea5e9">
+
+                                <label class="form-label mt-3">Status</label>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="specStatus" checked>
+                                    <label class="form-check-label ms-2" for="specStatus">
+                                        <strong>Active</strong>
+                                    </label>
+                                </div>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light border" data-bs-dismiss="modal">
+                        <i class="fa fa-times me-1" aria-hidden="true"></i> Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="saveSpecialist()">
+                        <i class="fa fa-check me-1" aria-hidden="true"></i>
+                        <span id="saveBtnText">Save Specialist</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ DELETE CONFIRM MODAL ============ -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <div class="modal-header bg-danger-soft">
+                    <h5 class="modal-title">
+                        <i class="fa fa-exclamation-triangle me-2" aria-hidden="true"></i>Confirm Delete
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p class="mb-1">Are you sure you want to delete</p>
+                    <p class="fw-bold mb-2" id="deleteName">Specialization Name</p>
+                    <p class="text-muted small mb-0">This action cannot be undone.</p>
+                    <input type="hidden" id="deleteId">
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-light border btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete()">
+                        <i class="fa fa-trash me-1" aria-hidden="true"></i> Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" id="toastContainer"></div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        /* =========================================================
+           STATE / DATA
+           ========================================================= */
+        let specialists = [
+            { id: 1, name: 'Cardiology', code: 'CARD', desc: 'Heart and cardiovascular system', icon: 'fa-heartbeat', color: '#ef4444', doctors: 6, status: 'active', created: '2026-01-15' },
+            { id: 2, name: 'Dermatology', code: 'DERM', desc: 'Skin, hair and nails', icon: 'fa-magic', color: '#f59e0b', doctors: 4, status: 'active', created: '2026-01-18' },
+            { id: 3, name: 'General Medicine', code: 'GEN', desc: 'General health and wellness', icon: 'fa-stethoscope', color: '#0ea5e9', doctors: 8, status: 'active', created: '2026-01-20' },
+            { id: 4, name: 'Orthopedics', code: 'ORTH', desc: 'Bones, joints and muscles', icon: 'fa-child', color: '#8b5cf6', doctors: 5, status: 'active', created: '2026-01-22' },
+            { id: 5, name: 'Pediatrics', code: 'PED', desc: 'Child health care', icon: 'fa-child', color: '#10b981', doctors: 3, status: 'active', created: '2026-01-25' },
+            { id: 6, name: 'Neurology', code: 'NEU', desc: 'Brain and nervous system', icon: 'fa-lightbulb-o', color: '#6366f1', doctors: 2, status: 'active', created: '2026-02-01' },
+            { id: 7, name: 'Gynecology', code: 'GYN', desc: "Women's health", icon: 'fa-female', color: '#ec4899', doctors: 4, status: 'active', created: '2026-02-05' },
+            { id: 8, name: 'ENT', code: 'ENT', desc: 'Ear, nose and throat', icon: 'fa-headphones', color: '#14b8a6', doctors: 2, status: 'active', created: '2026-02-08' },
+            { id: 9, name: 'Ophthalmology', code: 'OPH', desc: 'Eye care and vision', icon: 'fa-eye', color: '#0891b2', doctors: 3, status: 'inactive', created: '2026-02-10' },
+            { id: 10, name: 'Dentistry', code: 'DENT', desc: 'Teeth and oral health', icon: 'fa-smile-o', color: '#f97316', doctors: 3, status: 'active', created: '2026-02-12' },
+        ];
+        let nextId = 11;
+
+        /* Available Font Awesome 4 icons for specializations */
+        const AVAILABLE_ICONS = [
+            'fa-stethoscope', 'fa-heartbeat', 'fa-user-md', 'fa-hospital-o',
+            'fa-magic', 'fa-child', 'fa-female', 'fa-male',
+            'fa-eye', 'fa-smile-o', 'fa-headphones', 'fa-lightbulb-o',
+            'fa-plus-square', 'fa-medkit', 'fa-ambulance', 'fa-thermometer',
+            'fa-flask', 'fa-microscope', 'fa-wheelchair', 'fa-heart-o',
+            'fa-hand-o-right', 'fa-shield', 'fa-lemon-o', 'fa-bolt'
+        ];
+
+        /* Available colors */
+        const AVAILABLE_COLORS = [
+            '#0ea5e9', '#6366f1', '#8b5cf6', '#ec4899',
+            '#ef4444', '#f59e0b', '#10b981', '#14b8a6',
+            '#0891b2', '#f97316', '#84cc16', '#64748b'
+        ];
+
+        /* =========================================================
+           HELPERS
+           ========================================================= */
+        const specModal = new bootstrap.Modal(document.getElementById('specialistModal'));
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+
+        function initials(str) {
+            return str.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+        }
+
+        function formatDate(d) {
+            const dt = new Date(d);
+            return dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+
+        function showToast(message, type = 'success') {
+            const id = 'toast-' + Date.now();
+            const icons = { success: 'fa-check-circle', danger: 'fa-times-circle', info: 'fa-info-circle', warning: 'fa-exclamation-triangle' };
+            const colors = { success: '#10b981', danger: '#ef4444', info: '#0ea5e9', warning: '#f59e0b' };
+            const html = `
+        <div id="${id}" class="toast" role="alert">
+          <div class="toast-body d-flex align-items-center gap-2">
+            <i class="fa ${icons[type]}" style="color:${colors[type]};font-size:18px;" aria-hidden="true"></i>
+            <span class="flex-grow-1">${message}</span>
+            <button type="button" class="btn-close btn-close-sm" data-bs-dismiss="toast"></button>
+          </div>
+        </div>`;
+            document.getElementById('toastContainer').insertAdjacentHTML('beforeend', html);
+            const el = document.getElementById(id);
+            const t = new bootstrap.Toast(el, { delay: 2600 });
+            t.show();
+            el.addEventListener('hidden.bs.toast', () => el.remove());
+        }
+
+        /* =========================================================
+           RENDER
+           ========================================================= */
+        function renderStats() {
+            const total = specialists.length;
+            const active = specialists.filter(s => s.status === 'active').length;
+            const inactive = specialists.filter(s => s.status === 'inactive').length;
+            const doctors = specialists.reduce((sum, s) => sum + (s.doctors || 0), 0);
+            document.getElementById('statTotal').textContent = total;
+            document.getElementById('statActive').textContent = active;
+            document.getElementById('statInactive').textContent = inactive;
+            document.getElementById('statDoctors').textContent = doctors;
+        }
+
+        function getFiltered() {
+            const q = document.getElementById('searchInput').value.trim().toLowerCase();
+            const status = document.getElementById('filterStatus').value;
+            const sort = document.getElementById('sortBy').value;
+
+            let list = specialists.filter(s => {
+                const matchQ = !q || s.name.toLowerCase().includes(q) || s.code.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q);
+                const matchS = !status || s.status === status;
+                return matchQ && matchS;
+            });
+
+            if (sort === 'name') list.sort((a, b) => a.name.localeCompare(b.name));
+            if (sort === 'name-desc') list.sort((a, b) => b.name.localeCompare(a.name));
+            if (sort === 'doctors') list.sort((a, b) => b.doctors - a.doctors);
+            if (sort === 'date') list.sort((a, b) => new Date(b.created) - new Date(a.created));
+
+            return list;
+        }
+
+        function renderTable() {
+            const list = getFiltered();
+            const tbody = document.getElementById('specialistsTbody');
+            const empty = document.getElementById('emptyState');
+
+            document.getElementById('countBadge').textContent = 'Showing ' + list.length;
+            document.getElementById('paginationInfo').innerHTML =
+                'Showing <strong>' + list.length + '</strong> of <strong>' + specialists.length + '</strong> specializations';
+
+            if (!list.length) {
+                tbody.innerHTML = '';
+                empty.classList.remove('d-none');
+                return;
+            }
+            empty.classList.add('d-none');
+
+            tbody.innerHTML = list.map(s => `
+        <tr>
+          <td><input type="checkbox" class="form-check-input row-check" data-id="${s.id}"></td>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <div class="spec-icon" style="background:${hexToSoft(s.color)};color:${s.color};">
+                <i class="fa ${s.icon}" aria-hidden="true"></i>
+              </div>
+              <div>
+                <div class="fw-semibold">${escapeHtml(s.name)}</div>
+                <small class="text-muted">${escapeHtml(s.desc) || '—'}</small>
+              </div>
+            </div>
+          </td>
+          <td><span class="badge bg-light text-dark border">${escapeHtml(s.code)}</span></td>
+          <td><small class="text-muted">${escapeHtml(s.desc) || '—'}</small></td>
+          <td>
+            <span class="badge bg-primary bg-opacity-10 text-primary">
+              <i class="fa fa-user-md me-1" aria-hidden="true"></i>${s.doctors}
+            </span>
+          </td>
+          <td>
+            ${s.status === 'active'
+                    ? '<span class="status-badge st-active">Active</span>'
+                    : '<span class="status-badge st-inactive">Inactive</span>'}
+          </td>
+          <td><small class="text-muted">${formatDate(s.created)}</small></td>
+          <td class="text-end">
+            <div class="dropdown">
+              <button class="btn btn-sm btn-light border" data-bs-toggle="dropdown">
+                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                <li><a class="dropdown-item" href="#" onclick="openEditModal(${s.id}); return false;">
+                  <i class="fa fa-pencil me-2" aria-hidden="true"></i>Edit</a></li>
+                <li><a class="dropdown-item" href="#" onclick="toggleStatus(${s.id}); return false;">
+                  <i class="fa ${s.status === 'active' ? 'fa-pause-circle-o' : 'fa-play-circle-o'} me-2" aria-hidden="true"></i>
+                  Mark ${s.status === 'active' ? 'Inactive' : 'Active'}</a></li>
+                <li><a class="dropdown-item" href="#" onclick="viewDoctors(${s.id}); return false;">
+                  <i class="fa fa-users me-2" aria-hidden="true"></i>View Doctors</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger" href="#" onclick="openDeleteModal(${s.id}); return false;">
+                  <i class="fa fa-trash me-2" aria-hidden="true"></i>Delete</a></li>
+              </ul>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+        }
+
+        function hexToSoft(hex) {
+            // Convert hex to rgba with light alpha background
+            const c = hex.replace('#', '');
+            const r = parseInt(c.substring(0, 2), 16);
+            const g = parseInt(c.substring(2, 4), 16);
+            const b = parseInt(c.substring(4, 6), 16);
+            return `rgba(${r},${g},${b},0.12)`;
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        /* =========================================================
+           ICON + COLOR PICKER
+           ========================================================= */
+        function renderIconPicker(selected) {
+            const grid = document.getElementById('iconGrid');
+            grid.innerHTML = AVAILABLE_ICONS.map(ic =>
+                `<div class="icon-choice ${ic === selected ? 'selected' : ''}" data-icon="${ic}" onclick="pickIcon('${ic}')">
+           <i class="fa ${ic}" aria-hidden="true"></i>
+         </div>`
+            ).join('');
+        }
+
+        function pickIcon(ic) {
+            document.getElementById('specIcon').value = ic;
+            document.querySelectorAll('#iconGrid .icon-choice').forEach(el => {
+                el.classList.toggle('selected', el.dataset.icon === ic);
+            });
+        }
+
+        function renderColorPicker(selected) {
+            const grid = document.getElementById('colorGrid');
+            grid.innerHTML = AVAILABLE_COLORS.map(c =>
+                `<div class="color-choice ${c === selected ? 'selected' : ''}" style="background:${c};" data-color="${c}" onclick="pickColor('${c}')"></div>`
+            ).join('');
+        }
+
+        function pickColor(c) {
+            document.getElementById('specColor').value = c;
+            document.querySelectorAll('#colorGrid .color-choice').forEach(el => {
+                el.classList.toggle('selected', el.dataset.color === c);
+            });
+        }
+
+        /* =========================================================
+           CREATE
+           ========================================================= */
+        function openCreateModal() {
+            document.getElementById('modalTitle').textContent = 'Add New Specialist';
+            document.getElementById('saveBtnText').textContent = 'Save Specialist';
+            document.getElementById('specialistForm').reset();
+            document.getElementById('specialistId').value = '';
+            document.getElementById('specStatus').checked = true;
+            document.getElementById('specIcon').value = 'fa-stethoscope';
+            document.getElementById('specColor').value = '#0ea5e9';
+            renderIconPicker('fa-stethoscope');
+            renderColorPicker('#0ea5e9');
+        }
+
+        /* =========================================================
+           UPDATE
+           ========================================================= */
+        function openEditModal(id) {
+            const s = specialists.find(x => x.id === id);
+            if (!s) return;
+
+            document.getElementById('modalTitle').textContent = 'Edit Specialist';
+            document.getElementById('saveBtnText').textContent = 'Update Specialist';
+            document.getElementById('specialistId').value = s.id;
+            document.getElementById('specName').value = s.name;
+            document.getElementById('specCode').value = s.code;
+            document.getElementById('specDesc').value = s.desc;
+            document.getElementById('specStatus').checked = s.status === 'active';
+            document.getElementById('specIcon').value = s.icon;
+            document.getElementById('specColor').value = s.color;
+            renderIconPicker(s.icon);
+            renderColorPicker(s.color);
+            specModal.show();
+        }
+
+        /* =========================================================
+           SAVE (create or update)
+           ========================================================= */
+        function saveSpecialist() {
+            const id = document.getElementById('specialistId').value;
+            const name = document.getElementById('specName').value.trim();
+            const code = document.getElementById('specCode').value.trim().toUpperCase();
+            const desc = document.getElementById('specDesc').value.trim();
+            const icon = document.getElementById('specIcon').value || 'fa-stethoscope';
+            const color = document.getElementById('specColor').value || '#0ea5e9';
+            const status = document.getElementById('specStatus').checked ? 'active' : 'inactive';
+
+            // Validation
+            if (!name) { showToast('Please enter specialization name', 'warning'); return; }
+            if (!code) { showToast('Please enter a code', 'warning'); return; }
+
+            // Duplicate check (exclude current editing id)
+            const dupName = specialists.some(s => s.name.toLowerCase() === name.toLowerCase() && s.id != id);
+            if (dupName) { showToast('Specialization name already exists', 'danger'); return; }
+            const dupCode = specialists.some(s => s.code.toLowerCase() === code.toLowerCase() && s.id != id);
+            if (dupCode) { showToast('Code already exists', 'danger'); return; }
+
+            if (id) {
+                // UPDATE
+                const idx = specialists.findIndex(x => x.id == id);
+                specialists[idx] = { ...specialists[idx], name, code, desc, icon, color, status };
+                showToast('Specialization updated successfully', 'success');
+            } else {
+                // CREATE
+                specialists.push({
+                    id: nextId++,
+                    name, code, desc, icon, color,
+                    doctors: 0,
+                    status,
+                    created: new Date().toISOString().slice(0, 10)
+                });
+                showToast('Specialization added successfully', 'success');
+            }
+
+            specModal.hide();
+            renderStats();
+            renderTable();
+        }
+
+        /* =========================================================
+           DELETE
+           ========================================================= */
+        function openDeleteModal(id) {
+            const s = specialists.find(x => x.id === id);
+            if (!s) return;
+            document.getElementById('deleteName').textContent = s.name;
+            document.getElementById('deleteId').value = id;
+            deleteModal.show();
+        }
+
+        function confirmDelete() {
+            const id = parseInt(document.getElementById('deleteId').value, 10);
+            specialists = specialists.filter(x => x.id !== id);
+            deleteModal.hide();
+            showToast('Specialization deleted', 'danger');
+            renderStats();
+            renderTable();
+        }
+
+        /* =========================================================
+           ACTIONS
+           ========================================================= */
+        function toggleStatus(id) {
+            const s = specialists.find(x => x.id === id);
+            if (!s) return;
+            s.status = s.status === 'active' ? 'inactive' : 'active';
+            showToast(`Marked as ${s.status}`, 'info');
+            renderStats();
+            renderTable();
+        }
+
+        function viewDoctors(id) {
+            const s = specialists.find(x => x.id === id);
+            if (!s) return;
+            showToast(`Viewing ${s.doctors} doctors in ${s.name}`, 'info');
+            // In a real app: window.location.href = `doctors.html?spec=${s.code}`;
+        }
+
+        /* =========================================================
+           FILTERS / SEARCH / SORT
+           ========================================================= */
+        document.getElementById('searchInput').addEventListener('input', renderTable);
+        document.getElementById('filterStatus').addEventListener('change', renderTable);
+        document.getElementById('sortBy').addEventListener('change', renderTable);
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('filterStatus').value = '';
+            document.getElementById('sortBy').value = 'name';
+            renderTable();
+        }
+
+        /* =========================================================
+           SELECT ALL
+           ========================================================= */
+        document.getElementById('selectAll').addEventListener('change', function () {
+            document.querySelectorAll('.row-check').forEach(cb => cb.checked = this.checked);
+        });
+
+        /* =========================================================
+           EXPORT CSV
+           ========================================================= */
+        function exportCSV() {
+            const list = getFiltered();
+            if (!list.length) { showToast('Nothing to export', 'warning'); return; }
+            const rows = [['ID', 'Name', 'Code', 'Description', 'Doctors', 'Status', 'Created']];
+            list.forEach(s => rows.push([s.id, s.name, s.code, s.desc, s.doctors, s.status, s.created]));
+            const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'specialists_' + new Date().toISOString().slice(0, 10) + '.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Exported ' + list.length + ' rows', 'success');
+        }
+
+        /* =========================================================
+           SIDEBAR + TOPBAR EVENTS
+           ========================================================= */
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const toggleBtn = document.getElementById('toggleBtn');
+
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('show');
+            overlay.classList.toggle('show');
+        });
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('show');
+            overlay.classList.remove('show');
+        });
+
+        document.querySelectorAll('.nav-side .nav-link').forEach(link => {
+            link.addEventListener('click', function (e) {
+                if (this.hasAttribute('data-bs-toggle')) return;
+                document.querySelectorAll('.nav-side .nav-link').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        /* =========================================================
+           INIT
+           ========================================================= */
+        renderStats();
+        renderTable();
+    </script>
+
+</body>
+
+</html>
