@@ -1,0 +1,9 @@
+# Gudiliens 
+    - Php variable will always start from $ and use only alphetic ..
+    - Include function in php is used for include your code which you want ot reuse ..
+    - . is used for concatination operator in php
+# Interview Questions 
+    - What is difference between == , === , = 
+        - == is used for compare value ..
+        - = is used for assign value 
+        - === is used for check values + types are same of not ..
